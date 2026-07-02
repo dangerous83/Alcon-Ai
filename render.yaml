@@ -1,0 +1,24 @@
+# Render Blueprint — one-click deploy of Alcon AI Studio.
+# In Render: New + → Blueprint → connect this repo → Apply.
+# It runs the real Node server (npm start). Add your FAL_KEY in the
+# dashboard, or paste it in-app under Settings after it boots.
+services:
+  - type: web
+    name: alcon-ai-studio
+    runtime: node
+    plan: free
+    branch: claude/ai-image-video-platform-vqqfvh
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/models
+    envVars:
+      - key: FAL_KEY
+        sync: false        # set this in the Render dashboard (kept secret)
+      - key: NODE_VERSION
+        value: 20
+    # Free tier has an ephemeral disk (generated media resets on redeploy).
+    # For permanent storage, upgrade the plan and attach the disk below.
+    # disk:
+    #   name: media
+    #   mountPath: /opt/render/project/src/data
+    #   sizeGB: 1

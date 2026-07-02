@@ -77,10 +77,16 @@ Adding a model = one entry in `lib/models.js` (metadata + a `build()` that retur
 
 ## Deploying
 
-Any Node 18+ host works (VPS, Railway, Render, Fly.io, Docker):
+> ⚠️ **GitHub Pages cannot host this** — it's a full-stack app, not a static
+> site. Pages can't run `server.js`, so it would show a blank page. Use a Node
+> host instead. See **[DEPLOY.md](./DEPLOY.md)** for one-click Render/Railway/Docker steps.
+
+Any Node 18+ host works (Render, Railway, Fly.io, VPS, Docker):
 
 ```bash
 PORT=3000 FAL_KEY=... node server.js
 ```
 
-Put it behind HTTPS/auth if you expose it publicly — the platform itself has no login layer.
+A **Render blueprint** (`render.yaml`) and a **Dockerfile** are included for
+one-click deploys. Put it behind HTTPS/auth if you expose it publicly — the
+platform itself has no login layer.
