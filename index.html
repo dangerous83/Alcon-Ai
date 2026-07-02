@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alcon AI Studio — Image & Video Generation</title>
+  <meta name="description" content="Professional AI image & video generation — Seedance, Kling, Vidu, FLUX, Seedream, Imagen. Runs in your browser on fal.ai." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>" />
+  <style>
+/* ============================================================
+   Alcon AI Studio — dark professional studio theme
+   ============================================================ */
+:root {
+  --bg: #0a0b0f; --bg-2: #0f1117; --bg-3: #151823; --panel: #10131b;
+  --line: #232838; --line-2: #2e3548;
+  --text: #eef1f8; --text-2: #9aa3b8; --text-3: #626c85;
+  --accent: #7c5cff; --accent-2: #4f8bff; --accent-video: #ff5c87; --accent-video-2: #ff8a5c;
+  --ok: #34d399; --warn: #fbbf24; --err: #f87171;
+  --radius: 14px; --radius-s: 9px; --sidebar-w: 232px; --panel-w: 400px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(124, 92, 255, .09), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(79, 139, 255, .07), transparent 60%),
+    var(--bg);
+  color: var(--text); overflow: hidden; font-size: 14px; -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; }
+input, textarea { font-family: inherit; }
+.app { display: flex; height: 100vh; }
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: rgba(13, 15, 21, .85); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; padding: 22px 14px; backdrop-filter: blur(12px);
+}
+.brand { display: flex; align-items: center; gap: 10px; padding: 2px 8px 24px; }
+.brand-mark {
+  width: 34px; height: 34px; display: grid; place-items: center; font-size: 15px;
+  border-radius: 10px; color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 4px 18px rgba(124, 92, 255, .35);
+}
+.brand-name { font-weight: 800; letter-spacing: .14em; font-size: 15px; }
+.brand-name span {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent; margin-left: 3px;
+}
+.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 11px 12px;
+  background: none; border: none; border-radius: var(--radius-s);
+  color: var(--text-2); font-size: 13.5px; font-weight: 600; transition: all .15s ease; text-align: left;
+}
+.nav-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,.04); }
+.nav-item.active {
+  color: var(--text); background: linear-gradient(90deg, rgba(124,92,255,.16), rgba(79,139,255,.08));
+  box-shadow: inset 0 0 0 1px rgba(124,92,255,.25);
+}
+.sidebar-footer { margin-top: auto; padding: 8px; }
+.api-status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-3); }
+.api-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+.api-status.ok .dot { background: var(--ok); box-shadow: 0 0 8px rgba(52,211,153,.6); }
+.api-status.ok .label { color: var(--text-2); }
+.api-status.missing .dot { background: var(--warn); box-shadow: 0 0 8px rgba(251,191,36,.5); }
+.view { display: none; flex: 1; min-width: 0; }
+.view.active { display: flex; }
+.panel {
+  width: var(--panel-w); flex-shrink: 0; border-right: 1px solid var(--line);
+  background: rgba(16, 19, 27, .6); overflow-y: auto; padding: 28px 26px 40px;
+}
+.panel-header { margin-bottom: 22px; }
+.panel-header h1 { font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+.panel-header p { color: var(--text-3); font-size: 12.5px; margin-top: 5px; }
+.field { margin-bottom: 18px; }
+.field-row { display: flex; gap: 14px; }
+.field-row .field.grow { flex: 1; }
+.field > label {
+  display: block; font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--text-2); margin-bottom: 8px;
+}
+.field > label em { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--text-3); font-style: normal; }
+textarea, input[type="text"], input[type="password"] {
+  width: 100%; background: var(--bg-3); border: 1px solid var(--line); border-radius: var(--radius-s);
+  color: var(--text); padding: 11px 13px; font-size: 13.5px; line-height: 1.55; resize: vertical; transition: border-color .15s;
+}
+textarea:focus, input:focus { outline: none; border-color: var(--accent); }
+textarea::placeholder, input::placeholder { color: var(--text-3); }
+.model-select { display: flex; flex-direction: column; gap: 7px; }
+.model-card {
+  display: flex; align-items: center; gap: 11px; padding: 11px 13px; border: 1px solid var(--line);
+  border-radius: var(--radius-s); background: var(--bg-3); text-align: left; transition: all .15s; color: var(--text);
+}
+.model-card:hover { border-color: var(--line-2); }
+.model-card.active { border-color: var(--accent); background: linear-gradient(90deg, rgba(124,92,255,.12), rgba(79,139,255,.05)); }
+.view#view-video .model-card.active { border-color: var(--accent-video); background: linear-gradient(90deg, rgba(255,92,135,.1), rgba(255,138,92,.04)); }
+.model-card .mc-info { flex: 1; min-width: 0; }
+.model-card .mc-name { font-weight: 700; font-size: 13px; }
+.model-card .mc-name small { color: var(--text-3); font-weight: 500; margin-left: 6px; }
+.model-card .mc-tag { font-size: 11.5px; color: var(--text-3); margin-top: 2px; line-height: 1.4; }
+.model-card .mc-badges { display: flex; gap: 4px; flex-shrink: 0; }
+.badge { font-size: 9.5px; font-weight: 700; letter-spacing: .05em; padding: 3px 6px; border-radius: 5px; background: rgba(124,92,255,.15); color: #b3a1ff; }
+.badge.frames { background: rgba(255,92,135,.14); color: #ff9ab5; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 7px 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg-3);
+  color: var(--text-2); font-size: 12.5px; font-weight: 600; transition: all .13s;
+}
+.chip:hover:not(:disabled) { color: var(--text); border-color: var(--line-2); }
+.chip.active { color: #fff; border-color: var(--accent); background: rgba(124,92,255,.18); }
+#view-video .chip.active { border-color: var(--accent-video); background: rgba(255,92,135,.15); }
+.chip:disabled { opacity: .35; cursor: not-allowed; }
+.chip-row.small .chip { padding: 5px 11px; font-size: 12px; }
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--bg-3); overflow: hidden; }
+.stepper button { width: 34px; height: 36px; background: none; border: none; color: var(--text-2); font-size: 16px; font-weight: 600; }
+.stepper button:hover { color: var(--text); background: rgba(255,255,255,.05); }
+.stepper span { min-width: 34px; text-align: center; font-weight: 700; font-size: 14px; }
+.dropzone { border: 1.5px dashed var(--line-2); border-radius: var(--radius-s); background: rgba(21, 24, 35, .5); cursor: pointer; transition: all .15s; }
+.dropzone:hover, .dropzone.drag { border-color: var(--accent); background: rgba(124,92,255,.06); }
+.dz-inner { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; color: var(--text-3); font-size: 12.5px; font-weight: 600; }
+.dz-inner svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.thumb-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.thumb { position: relative; width: 64px; height: 64px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line-2); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb button { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border: none; border-radius: 50%; background: rgba(0,0,0,.72); color: #fff; font-size: 12px; line-height: 1; display: grid; place-items: center; }
+.frames-row { display: flex; align-items: stretch; gap: 10px; }
+.frame-arrow { align-self: center; color: var(--text-3); font-size: 16px; }
+.frame-slot {
+  flex: 1; position: relative; aspect-ratio: 16/10; border: 1.5px dashed var(--line-2);
+  border-radius: var(--radius-s); background: rgba(21,24,35,.5); cursor: pointer; overflow: hidden; transition: all .15s;
+}
+.frame-slot:hover:not(.disabled), .frame-slot.drag { border-color: var(--accent-video); background: rgba(255,92,135,.05); }
+.frame-slot.disabled { opacity: .4; cursor: not-allowed; }
+.frame-slot.filled { border-style: solid; border-color: var(--line-2); }
+.frame-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--text-3); font-size: 12px; font-weight: 600; }
+.frame-empty[hidden] { display: none; }
+.frame-empty svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.frame-preview { position: absolute; inset: 0; }
+.frame-preview img { width: 100%; height: 100%; object-fit: cover; }
+.frame-preview .frame-remove { position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border: none; border-radius: 50%; background: rgba(0,0,0,.72); color: #fff; font-size: 13px; display: grid; place-items: center; }
+.frame-tag { position: absolute; bottom: 5px; left: 5px; font-size: 9px; font-weight: 800; letter-spacing: .08em; padding: 3px 6px; border-radius: 4px; background: rgba(124,92,255,.9); color: #fff; }
+.frame-tag.end { background: rgba(255,92,135,.9); }
+.micro-note { font-size: 11.5px; color: var(--text-3); margin-top: 7px; line-height: 1.5; }
+.micro-note b { color: var(--text-2); }
+.duration-slider { display: flex; align-items: center; gap: 14px; width: 100%; padding: 4px 2px; }
+.duration-slider input[type="range"] { flex: 1; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--accent-video), var(--accent-video-2)); outline: none; cursor: pointer; }
+.duration-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 3px solid var(--accent-video); box-shadow: 0 2px 10px rgba(255,92,135,.4); }
+.duration-slider input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 3px solid var(--accent-video); }
+.duration-value { min-width: 38px; text-align: center; font-family: var(--mono); font-weight: 600; font-size: 13px; color: var(--text); background: var(--bg-3); border: 1px solid var(--line); padding: 5px 8px; border-radius: 7px; }
+.switch { position: relative; width: 46px; height: 26px; border: 1px solid var(--line-2); border-radius: 20px; background: var(--bg-3); transition: all .18s; display: block; }
+.switch .knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--text-3); transition: all .18s; }
+.switch.on { background: linear-gradient(90deg, var(--accent-video), var(--accent-video-2)); border-color: transparent; }
+.switch.on .knob { left: 22px; background: #fff; }
+.generate-btn {
+  width: 100%; padding: 14px; border: none; border-radius: var(--radius-s);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: #fff;
+  font-size: 14px; font-weight: 700; letter-spacing: .01em; transition: all .18s;
+  box-shadow: 0 6px 24px rgba(124, 92, 255, .3); margin-top: 6px;
+}
+.generate-btn.video { background: linear-gradient(90deg, var(--accent-video), var(--accent-video-2)); box-shadow: 0 6px 24px rgba(255, 92, 135, .28); }
+.generate-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.generate-btn:disabled { opacity: .55; cursor: wait; box-shadow: none; }
+.generate-btn.slim { width: auto; padding: 11px 20px; margin: 0; font-size: 13px; }
+.panel-note { margin-top: 12px; font-size: 12px; color: var(--text-3); line-height: 1.5; min-height: 16px; }
+.panel-note.error { color: var(--err); }
+.results { flex: 1; min-width: 0; overflow-y: auto; padding: 28px 30px 60px; }
+.results.wide { padding: 32px 40px 60px; }
+.results.narrow { max-width: 760px; }
+.results-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.results-head h2 { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+.job-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+.job-grid.video { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.job-grid.gallery { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.job-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); overflow: hidden; transition: border-color .15s, transform .15s; }
+.job-card:hover { border-color: var(--line-2); }
+.job-media { position: relative; background: var(--bg-2); min-height: 150px; display: grid; place-items: center; }
+.job-media img, .job-media video { width: 100%; display: block; max-height: 420px; object-fit: cover; cursor: zoom-in; }
+.job-media video { cursor: default; }
+.job-media .multi { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 100%; }
+.job-media .multi img { max-height: 210px; height: 100%; object-fit: cover; }
+.job-media .job-progress { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px 20px; width: 100%; }
+.spinner { width: 26px; height: 26px; border: 2.5px solid var(--line-2); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+.job-card.video .spinner { border-top-color: var(--accent-video); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.job-progress .status-text { font-size: 12px; color: var(--text-2); font-weight: 600; }
+.job-progress .status-sub { font-size: 11px; color: var(--text-3); font-family: var(--mono); max-width: 90%; text-align: center; }
+.shimmer { position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.035) 50%, transparent 70%); background-size: 200% 100%; animation: shimmer 1.6s infinite; pointer-events: none; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.job-media .job-error { padding: 26px 18px; text-align: center; }
+.job-error .err-icon { font-size: 20px; margin-bottom: 8px; }
+.job-error p { font-size: 12px; color: var(--err); line-height: 1.5; word-break: break-word; }
+.job-info { padding: 12px 14px 13px; }
+.job-prompt { font-size: 12.5px; color: var(--text-2); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.job-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 9px; }
+.job-meta .tag { font-size: 10px; font-weight: 700; color: var(--text-3); border: 1px solid var(--line); padding: 2.5px 7px; border-radius: 5px; letter-spacing: .03em; }
+.job-meta .tag.model { color: #b3a1ff; border-color: rgba(124,92,255,.35); }
+.job-card.video .job-meta .tag.model { color: #ff9ab5; border-color: rgba(255,92,135,.3); }
+.job-actions { display: flex; gap: 4px; margin-left: auto; }
+.icon-btn { width: 26px; height: 26px; display: grid; place-items: center; border: none; border-radius: 6px; background: none; color: var(--text-3); transition: all .13s; }
+.icon-btn:hover { color: var(--text); background: rgba(255,255,255,.06); }
+.icon-btn.danger:hover { color: var(--err); }
+.icon-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.empty-state { display: none; flex-direction: column; align-items: center; padding: 90px 20px; text-align: center; }
+.empty-state.show { display: flex; }
+.empty-art { width: 62px; height: 62px; display: grid; place-items: center; font-size: 24px; color: var(--accent); border-radius: 18px; background: rgba(124,92,255,.08); border: 1px solid rgba(124,92,255,.2); margin-bottom: 18px; }
+#view-video .empty-art { color: var(--accent-video); background: rgba(255,92,135,.07); border-color: rgba(255,92,135,.2); }
+.empty-state h3 { font-size: 15px; font-weight: 700; }
+.empty-state p { font-size: 12.5px; color: var(--text-3); margin-top: 6px; max-width: 320px; line-height: 1.55; }
+.settings-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); padding: 24px; margin-bottom: 18px; }
+.settings-card h3 { font-size: 14.5px; font-weight: 700; margin-bottom: 9px; }
+.settings-desc { font-size: 13px; color: var(--text-2); line-height: 1.65; margin-bottom: 16px; }
+.key-row { display: flex; gap: 10px; }
+.key-row input { flex: 1; font-family: var(--mono); font-size: 12.5px; }
+.key-meta { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--text-3); }
+.key-meta .ok { color: var(--ok); }
+.key-meta .err { color: var(--err); }
+.link-btn { background: none; border: none; color: var(--accent-2); font-size: 12px; font-weight: 600; padding: 0; }
+.link-btn:hover { text-decoration: underline; }
+.spec-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.spec-list li { font-size: 13px; color: var(--text-2); line-height: 1.6; padding-left: 18px; position: relative; }
+.spec-list li::before { content: '◆'; position: absolute; left: 0; top: 1px; font-size: 9px; color: var(--accent); }
+.spec-list code { font-family: var(--mono); font-size: 11.5px; background: var(--bg-3); padding: 2px 6px; border-radius: 5px; }
+.notice { border-radius: var(--radius-s); padding: 12px 14px; font-size: 12.5px; line-height: 1.6; margin-bottom: 16px; }
+.notice.warn { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.28); color: #fde68a; }
+.notice.info { background: rgba(79,139,255,.08); border: 1px solid rgba(79,139,255,.25); color: #bfdbfe; }
+.notice b { color: #fff; }
+.notice code { font-family: var(--mono); }
+.lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(5, 6, 10, .93); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px; backdrop-filter: blur(8px); }
+.lightbox[hidden] { display: none; }
+.lb-body { max-width: 92vw; max-height: 82vh; display: grid; place-items: center; }
+.lb-body img, .lb-body video { max-width: 92vw; max-height: 78vh; border-radius: 10px; }
+.lb-caption { margin-top: 16px; font-size: 13px; color: var(--text-2); max-width: 720px; text-align: center; line-height: 1.5; }
+.lb-close { position: absolute; top: 22px; right: 28px; width: 40px; height: 40px; border: none; border-radius: 50%; background: rgba(255,255,255,.07); color: #fff; font-size: 20px; }
+.lb-close:hover { background: rgba(255,255,255,.14); }
+.toasts { position: fixed; bottom: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+.toast { min-width: 260px; max-width: 380px; padding: 13px 16px; border-radius: 11px; background: #1a1e2c; border: 1px solid var(--line-2); font-size: 13px; line-height: 1.5; box-shadow: 0 10px 34px rgba(0,0,0,.5); animation: toast-in .22s ease; }
+.toast.err { border-color: rgba(248,113,113,.4); color: #fecaca; }
+.toast.ok { border-color: rgba(52,211,153,.4); color: #bbf7d0; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+@media (max-width: 1100px) {
+  .app { flex-direction: column; overflow-y: auto; }
+  body { overflow: auto; }
+  .sidebar { width: 100%; flex-direction: row; align-items: center; padding: 10px 14px; }
+  .brand { padding: 0 12px 0 0; }
+  .nav { flex-direction: row; flex: 1; }
+  .nav-item span { display: none; }
+  .sidebar-footer { margin: 0; }
+  .view.active { flex-direction: column; height: auto; }
+  .panel { width: 100%; border-right: none; border-bottom: 1px solid var(--line); }
+}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">◆</div>
+        <div class="brand-name">ALCON<span>AI</span></div>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" data-view="image">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><path d="m21 15-5-5L5 21"/></svg>
+          <span>Image Studio</span>
+        </button>
+        <button class="nav-item" data-view="video">
+          <svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg>
+          <span>Video Studio</span>
+        </button>
+        <button class="nav-item" data-view="gallery">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Gallery</span>
+        </button>
+        <button class="nav-item" data-view="settings">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.2 4.2l2.8 2.8m10 10 2.8 2.8M1 12h4m14 0h4M4.2 19.8 7 17m10-10 2.8-2.8"/></svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="api-status" id="api-status"><span class="dot"></span><span class="label">Checking API…</span></div>
+      </div>
+    </aside>
+
+    <main class="view active" id="view-image">
+      <div class="panel">
+        <header class="panel-header"><h1>Image Studio</h1><p>Professional image generation with reference-image control</p></header>
+        <div class="field"><label>Prompt</label>
+          <textarea id="img-prompt" rows="4" placeholder="A cinematic editorial portrait of a violinist on a rain-soaked rooftop at dusk, neon reflections, shallow depth of field, 85mm…"></textarea>
+        </div>
+        <div class="field"><label>Model</label><div class="model-select" id="img-models"></div></div>
+        <div class="field"><label>Aspect ratio</label><div class="chip-row" id="img-aspect"></div></div>
+        <div class="field-row">
+          <div class="field"><label>Outputs</label>
+            <div class="stepper" id="img-count"><button type="button" data-step="-1">−</button><span>1</span><button type="button" data-step="1">+</button></div>
+          </div>
+          <div class="field grow"><label>Seed <em>(optional)</em></label><input type="text" id="img-seed" inputmode="numeric" placeholder="Random" /></div>
+        </div>
+        <div class="field" id="img-ref-field"><label>Reference images <em id="img-ref-hint">(optional — guide style, identity or edit)</em></label>
+          <div class="dropzone" id="img-ref-drop">
+            <input type="file" id="img-ref-input" accept="image/*" multiple hidden />
+            <div class="dz-inner"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Add images</span></div>
+          </div>
+          <div class="thumb-row" id="img-ref-thumbs"></div>
+        </div>
+        <button class="generate-btn" id="img-generate"><span class="btn-label">Generate</span></button>
+        <div class="panel-note" id="img-note"></div>
+      </div>
+      <section class="results">
+        <div class="results-head"><h2>Generations</h2></div>
+        <div class="job-grid" id="img-jobs"></div>
+        <div class="empty-state" id="img-empty"><div class="empty-art">✦</div><h3>Nothing here yet</h3><p>Write a prompt and hit Generate — results appear here in real time.</p></div>
+      </section>
+    </main>
+
+    <main class="view" id="view-video">
+      <div class="panel">
+        <header class="panel-header"><h1>Video Studio</h1><p>Cinematic video up to 15s — with start &amp; end frame control</p></header>
+        <div class="field"><label>Prompt</label>
+          <textarea id="vid-prompt" rows="4" placeholder="Slow dolly-in on a lighthouse in a storm, waves exploding against rocks, dramatic volumetric light breaking through clouds, photoreal…"></textarea>
+        </div>
+        <div class="field"><label>Model</label><div class="model-select" id="vid-models"></div></div>
+        <div class="field-row"><div class="field grow"><label>Duration</label><div class="chip-row" id="vid-duration"></div><div class="micro-note" id="vid-duration-note"></div></div></div>
+        <div class="field-row">
+          <div class="field grow"><label>Resolution</label><div class="chip-row" id="vid-resolution"></div></div>
+          <div class="field" id="vid-audio-field"><label>Audio</label><button type="button" class="switch" id="vid-audio" aria-pressed="true"><span class="knob"></span></button></div>
+        </div>
+        <div class="field" id="vid-aspect-field"><label>Aspect ratio</label><div class="chip-row" id="vid-aspect"></div></div>
+        <div class="field"><label>Keyframes</label>
+          <div class="frames-row">
+            <div class="frame-slot" id="frame-start">
+              <input type="file" accept="image/*" hidden />
+              <div class="frame-empty"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span>Start frame</span></div>
+              <div class="frame-preview" hidden><img alt="Start frame" /><button class="frame-remove" type="button" title="Remove">×</button><span class="frame-tag">START</span></div>
+            </div>
+            <div class="frame-arrow">→</div>
+            <div class="frame-slot" id="frame-end">
+              <input type="file" accept="image/*" hidden />
+              <div class="frame-empty"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span>End frame</span></div>
+              <div class="frame-preview" hidden><img alt="End frame" /><button class="frame-remove" type="button" title="Remove">×</button><span class="frame-tag end">END</span></div>
+            </div>
+          </div>
+          <div class="micro-note" id="vid-frames-note"></div>
+        </div>
+        <div class="field" id="vid-ref-field" style="display:none"><label>Reference images <em id="vid-ref-hint">(optional)</em></label>
+          <div class="dropzone" id="vid-ref-drop">
+            <input type="file" id="vid-ref-input" accept="image/*" multiple hidden />
+            <div class="dz-inner"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Add reference images</span></div>
+          </div>
+          <div class="thumb-row" id="vid-ref-thumbs"></div>
+        </div>
+        <div class="field"><label>Seed <em>(optional)</em></label><input type="text" id="vid-seed" inputmode="numeric" placeholder="Random" /></div>
+        <button class="generate-btn video" id="vid-generate"><span class="btn-label">Generate video</span></button>
+        <div class="panel-note" id="vid-note"></div>
+      </div>
+      <section class="results">
+        <div class="results-head"><h2>Generations</h2></div>
+        <div class="job-grid video" id="vid-jobs"></div>
+        <div class="empty-state" id="vid-empty"><div class="empty-art">▶</div><h3>No videos yet</h3><p>Describe a shot — optionally pin the first and last frame — and generate.</p></div>
+      </section>
+    </main>
+
+    <main class="view" id="view-gallery">
+      <section class="results wide">
+        <div class="results-head"><h2>Gallery</h2>
+          <div class="chip-row small" id="gallery-filter">
+            <button class="chip active" data-filter="all">All</button>
+            <button class="chip" data-filter="image">Images</button>
+            <button class="chip" data-filter="video">Videos</button>
+          </div>
+        </div>
+        <div class="job-grid gallery" id="gallery-jobs"></div>
+        <div class="empty-state" id="gallery-empty"><div class="empty-art">◇</div><h3>Your gallery is empty</h3><p>Every completed generation is stored here automatically.</p></div>
+      </section>
+    </main>
+
+    <main class="view" id="view-settings">
+      <section class="results wide narrow">
+        <div class="results-head"><h2>Settings</h2></div>
+        <div class="settings-card">
+          <h3>fal.ai API key</h3>
+          <p class="settings-desc">
+            Alcon AI Studio runs on <a href="https://fal.ai" target="_blank" rel="noopener">fal.ai</a> — one key unlocks every model
+            (Seedance, Kling, Vidu, Hailuo, FLUX, Seedream, Imagen). Create a key at
+            <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>, paste it below and you're live.
+          </p>
+          <div class="notice warn">
+            <b>This is the browser edition.</b> Your key is stored only in <b>this browser</b> (localStorage) and sent directly to fal.ai from your device — it is never uploaded to GitHub or any Alcon server. Use your own key on your own machine. For a shared/production deployment where the key stays hidden server-side, run the included Node server instead (see the repo's <code>DEPLOY.md</code>).
+          </div>
+          <div class="key-row">
+            <input type="password" id="settings-key" placeholder="Paste your FAL key (id:secret)" autocomplete="off" />
+            <button class="generate-btn slim" id="settings-save">Save key</button>
+          </div>
+          <div class="key-meta"><span id="settings-key-status">No key configured.</span><button class="link-btn" id="settings-test">Test connection</button></div>
+        </div>
+        <div class="settings-card">
+          <h3>Platform</h3>
+          <ul class="spec-list">
+            <li><b>Video</b> — up to 15 seconds per shot, start-frame &amp; end-frame keyframing, native audio.</li>
+            <li><b>Image</b> — up to 4 outputs per run, multi-reference editing, up to 4K-class detail.</li>
+            <li><b>Runs in your browser</b> — generations call fal.ai's GPU queue directly; nothing is proxied through a third party.</li>
+            <li><b>Gallery</b> — completed results are remembered in this browser. fal-hosted media URLs may expire after a while; download anything you want to keep.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" id="lb-close">×</button>
+    <div class="lb-body" id="lb-body"></div>
+    <div class="lb-caption" id="lb-caption"></div>
+  </div>
+  <div class="toasts" id="toasts"></div>
+
+  <script>
+/* ============================================================
+   Alcon AI Studio — browser edition (client-side, calls fal.ai directly)
+   ============================================================ */
+(() => {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const FAL = 'https://queue.fal.run';
+  const KEY_LS = 'alcon_fal_key';
+  const JOBS_LS = 'alcon_jobs_v1';
+  const MAX_VIDEO_SECONDS = 15;
+
+  const nearest = (r, a) => !a || !a.length ? r : a.reduce((b, d) => Math.abs(d - r) < Math.abs(b - r) ? d : b, a[0]);
+  const clampR = (r, o) => Math.min(Math.max(r, o.min), o.max);
+
+  const IMAGE_MODELS = [
+    { id: 'seedream-4.5', name: 'Seedream 4.5', provider: 'ByteDance',
+      tagline: 'Flagship photoreal quality, strong prompt adherence, multi-reference editing',
+      aspectRatios: ['1:1','4:3','3:4','16:9','9:16'], maxImages: 4, supportsReference: true, maxReferenceImages: 6,
+      build(req) {
+        const sz = {'1:1':'square_hd','4:3':'landscape_4_3','3:4':'portrait_4_3','16:9':'landscape_16_9','9:16':'portrait_16_9'};
+        const p = { prompt: req.prompt, image_size: sz[req.aspectRatio] || 'square_hd', num_images: req.numImages, enable_safety_checker: true };
+        if (req.seed != null) p.seed = req.seed;
+        if (req.referenceImages && req.referenceImages.length) { p.image_urls = req.referenceImages; return { endpoint: 'fal-ai/bytedance/seedream/v4.5/edit', payload: p }; }
+        return { endpoint: 'fal-ai/bytedance/seedream/v4.5/text-to-image', payload: p };
+      } },
+    { id: 'flux-pro-ultra', name: 'FLUX 1.1 Pro Ultra', provider: 'Black Forest Labs',
+      tagline: 'Up to 4MP ultra-detailed renders, best-in-class realism',
+      aspectRatios: ['21:9','16:9','4:3','3:2','1:1','2:3','3:4','9:16','9:21'], maxImages: 4, supportsReference: false,
+      build(req) {
+        const p = { prompt: req.prompt, aspect_ratio: req.aspectRatio || '16:9', num_images: req.numImages, enable_safety_checker: true, safety_tolerance: '2', output_format: 'png' };
+        if (req.seed != null) p.seed = req.seed;
+        return { endpoint: 'fal-ai/flux-pro/v1.1-ultra', payload: p };
+      } },
+    { id: 'flux-kontext-max', name: 'FLUX.1 Kontext [max]', provider: 'Black Forest Labs',
+      tagline: 'Instruction-based editing of an uploaded image — restyle, replace, refine',
+      aspectRatios: ['auto','21:9','16:9','4:3','3:2','1:1','2:3','3:4','9:16','9:21'], maxImages: 4, supportsReference: true, requiresReference: true, maxReferenceImages: 1,
+      build(req) {
+        const p = { prompt: req.prompt, image_url: req.referenceImages && req.referenceImages[0], num_images: req.numImages, guidance_scale: 3.5, safety_tolerance: '2', output_format: 'png' };
+        if (req.aspectRatio && req.aspectRatio !== 'auto') p.aspect_ratio = req.aspectRatio;
+        if (req.seed != null) p.seed = req.seed;
+        return { endpoint: 'fal-ai/flux-pro/kontext/max', payload: p };
+      } },
+    { id: 'imagen-4', name: 'Imagen 4', provider: 'Google',
+      tagline: 'Excellent typography and natural language understanding',
+      aspectRatios: ['1:1','16:9','9:16','3:4','4:3'], maxImages: 4, supportsReference: false,
+      build(req) {
+        const p = { prompt: req.prompt, aspect_ratio: req.aspectRatio || '1:1', num_images: req.numImages };
+        if (req.seed != null) p.seed = req.seed;
+        return { endpoint: 'fal-ai/imagen4/preview', payload: p };
+      } },
+    { id: 'flux-dev', name: 'FLUX.1 [dev]', provider: 'Black Forest Labs',
+      tagline: 'Fast, economical drafts and ideation',
+      aspectRatios: ['1:1','4:3','3:4','16:9','9:16'], maxImages: 4, supportsReference: false,
+      build(req) {
+        const sz = {'1:1':'square_hd','4:3':'landscape_4_3','3:4':'portrait_4_3','16:9':'landscape_16_9','9:16':'portrait_16_9'};
+        const p = { prompt: req.prompt, image_size: sz[req.aspectRatio] || 'square_hd', num_images: req.numImages, num_inference_steps: 28, guidance_scale: 3.5, enable_safety_checker: true };
+        if (req.seed != null) p.seed = req.seed;
+        return { endpoint: 'fal-ai/flux/dev', payload: p };
+      } }
+  ];
+
+  const VIDEO_MODELS = [
+    { id: 'seedance-2', name: 'Seedance 2.0', provider: 'ByteDance',
+      tagline: 'State-of-the-art cinematic engine — native audio, start+end frames, 4–15s',
+      durationRange: { min: 4, max: 15 }, defaultDuration: 8, resolutions: ['480p','720p'], defaultResolution: '720p',
+      aspectRatios: ['16:9','9:16','1:1','4:3','3:4','21:9'], supportsStartFrame: true, supportsEndFrame: true, supportsAudio: true, supportsReference: true, maxReferenceImages: 4,
+      referenceHint: 'Reference people/objects with @Image1, @Image2… in your prompt',
+      build(req) {
+        const d = clampR(req.duration, this.durationRange);
+        const p = { prompt: req.prompt, resolution: req.resolution || this.defaultResolution, duration: String(d), generate_audio: req.audio !== false };
+        if (req.seed != null) p.seed = req.seed;
+        if (req.startFrame) { p.image_url = req.startFrame; if (req.endFrame) p.end_image_url = req.endFrame; return { endpoint: 'bytedance/seedance-2.0/image-to-video', payload: p, duration: d }; }
+        if (req.referenceImages && req.referenceImages.length) { p.image_urls = req.referenceImages; p.aspect_ratio = req.aspectRatio || '16:9'; return { endpoint: 'bytedance/seedance-2.0/reference-to-video', payload: p, duration: d }; }
+        p.aspect_ratio = req.aspectRatio || '16:9';
+        return { endpoint: 'bytedance/seedance-2.0/text-to-video', payload: p, duration: d };
+      } },
+    { id: 'kling-3-pro', name: 'Kling 3.0 Pro', provider: 'Kuaishou',
+      tagline: 'Premium 1080p motion with audio, start+end frames, 3–15s',
+      durationRange: { min: 3, max: 15 }, defaultDuration: 5, resolutions: ['1080p'], defaultResolution: '1080p',
+      aspectRatios: ['16:9','9:16','1:1'], supportsStartFrame: true, supportsEndFrame: true, supportsAudio: true,
+      build(req) {
+        const d = clampR(req.duration, this.durationRange);
+        const p = { prompt: req.prompt, duration: String(d), generate_audio: req.audio !== false };
+        if (req.startFrame) { p.start_image_url = req.startFrame; if (req.endFrame) p.end_image_url = req.endFrame; return { endpoint: 'fal-ai/kling-video/v3/pro/image-to-video', payload: p, duration: d }; }
+        p.aspect_ratio = req.aspectRatio || '16:9';
+        return { endpoint: 'fal-ai/kling-video/v3/pro/text-to-video', payload: p, duration: d };
+      } },
+    { id: 'kling-2.5-pro', name: 'Kling 2.5 Turbo Pro', provider: 'Kuaishou',
+      tagline: 'Fast premium motion — great price/quality balance',
+      durations: [5,10], defaultDuration: 5, resolutions: ['1080p'], defaultResolution: '1080p',
+      aspectRatios: ['16:9','9:16','1:1'], supportsStartFrame: true, supportsEndFrame: true,
+      build(req) {
+        const d = nearest(req.duration, this.durations);
+        const p = { prompt: req.prompt, duration: String(d), negative_prompt: 'blur, distort, and low quality', cfg_scale: 0.5 };
+        if (req.startFrame) { p.image_url = req.startFrame; if (req.endFrame) p.tail_image_url = req.endFrame; return { endpoint: 'fal-ai/kling-video/v2.5-turbo/pro/image-to-video', payload: p, duration: d }; }
+        p.aspect_ratio = req.aspectRatio || '16:9';
+        return { endpoint: 'fal-ai/kling-video/v2.5-turbo/pro/text-to-video', payload: p, duration: d };
+      } },
+    { id: 'seedance-1-pro', name: 'Seedance 1.0 Pro', provider: 'ByteDance',
+      tagline: 'Proven cinematic workhorse — 1080p, start+end frames',
+      durations: [5,10], defaultDuration: 5, resolutions: ['480p','720p','1080p'], defaultResolution: '1080p',
+      aspectRatios: ['16:9','9:16','1:1','4:3','3:4','21:9'], supportsStartFrame: true, supportsEndFrame: true,
+      build(req) {
+        const d = nearest(req.duration, this.durations);
+        const p = { prompt: req.prompt, resolution: req.resolution || this.defaultResolution, duration: String(d) };
+        if (req.seed != null) p.seed = req.seed;
+        if (req.startFrame) { p.image_url = req.startFrame; if (req.endFrame) p.end_image_url = req.endFrame; return { endpoint: 'fal-ai/bytedance/seedance/v1/pro/image-to-video', payload: p, duration: d }; }
+        p.aspect_ratio = req.aspectRatio || '16:9';
+        return { endpoint: 'fal-ai/bytedance/seedance/v1/pro/text-to-video', payload: p, duration: d };
+      } },
+    { id: 'vidu-q1', name: 'Vidu Q1', provider: 'Vidu',
+      tagline: 'Purpose-built start→end frame interpolation',
+      durations: [5], defaultDuration: 5, resolutions: ['1080p'], defaultResolution: '1080p',
+      aspectRatios: ['16:9','9:16','1:1'], supportsStartFrame: true, supportsEndFrame: true, requiresBothFrames: true,
+      build(req) {
+        const p = { prompt: req.prompt, start_image_url: req.startFrame, end_image_url: req.endFrame, movement_amplitude: 'auto' };
+        if (req.seed != null) p.seed = req.seed;
+        return { endpoint: 'fal-ai/vidu/q1/start-end-to-video', payload: p, duration: 5 };
+      } },
+    { id: 'hailuo-02-pro', name: 'Hailuo 02 Pro', provider: 'MiniMax',
+      tagline: 'Excellent physics and character performance — 1080p, 6s',
+      durations: [6], defaultDuration: 6, resolutions: ['1080p'], defaultResolution: '1080p',
+      aspectRatios: ['16:9'], supportsStartFrame: true, supportsEndFrame: false,
+      build(req) {
+        const p = { prompt: req.prompt, prompt_optimizer: true };
+        if (req.startFrame) { p.image_url = req.startFrame; return { endpoint: 'fal-ai/minimax/hailuo-02/pro/image-to-video', payload: p, duration: 6 }; }
+        return { endpoint: 'fal-ai/minimax/hailuo-02/pro/text-to-video', payload: p, duration: 6 };
+      } }
+  ];
+
+  // ---------------- fal.ai client (direct browser calls) ----------------
+  const getKey = () => localStorage.getItem(KEY_LS) || '';
+  async function falErr(res) {
+    let detail = '';
+    try { const b = await res.json(); if (Array.isArray(b.detail)) detail = b.detail.map(d => `${(d.loc||[]).join('.')}: ${d.msg}`).join('; '); else detail = b.detail || b.message || JSON.stringify(b); }
+    catch { detail = await res.text().catch(() => ''); }
+    const prefix = res.status === 401 ? 'Invalid API key' : res.status === 403 ? 'API key not authorized for this model' : res.status === 422 ? 'The model rejected the request parameters' : res.status === 429 ? 'Rate limited by fal.ai — try again shortly' : `fal.ai error ${res.status}`;
+    const e = new Error(detail ? `${prefix}: ${detail}` : prefix); e.status = res.status; return e;
+  }
+  async function falSubmit(endpoint, input) {
+    const key = getKey();
+    if (!key) { const e = new Error('No fal.ai API key configured. Open Settings and paste your key.'); e.status = 401; throw e; }
+    const res = await fetch(`${FAL}/${endpoint}`, { method: 'POST', headers: { Authorization: `Key ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
+    if (!res.ok) throw await falErr(res);
+    const b = await res.json();
+    return { requestId: b.request_id, statusUrl: b.status_url || `${FAL}/${endpoint}/requests/${b.request_id}/status`, responseUrl: b.response_url || `${FAL}/${endpoint}/requests/${b.request_id}` };
+  }
+  async function falStatus(statusUrl) {
+    const res = await fetch(`${statusUrl}?logs=1`, { headers: { Authorization: `Key ${getKey()}` } });
+    if (!res.ok) throw await falErr(res);
+    const b = await res.json();
+    return { status: b.status, queuePosition: b.queue_position, logs: (b.logs || []).map(l => l.message).filter(Boolean) };
+  }
+  async function falResult(responseUrl) {
+    const res = await fetch(responseUrl, { headers: { Authorization: `Key ${getKey()}` } });
+    if (!res.ok) throw await falErr(res);
+    return res.json();
+  }
+  async function falTestKey(key) {
+    const res = await fetch(`${FAL}/fal-ai/flux/dev/requests/00000000-0000-0000-0000-000000000000/status`, { headers: { Authorization: `Key ${key}` } });
+    if (res.status === 401 || res.status === 403) return { ok: false, message: 'fal.ai rejected this key.' };
+    return { ok: true, message: 'API key accepted — platform is live.' };
+  }
+
+  // ---------------- State + persistence ----------------
+  function loadJobs() { try { return JSON.parse(localStorage.getItem(JOBS_LS)) || []; } catch { return []; } }
+  const state = {
+    jobs: loadJobs(), galleryFilter: 'all',
+    img: { modelId: IMAGE_MODELS[0].id, aspect: null, count: 1, refs: [] },
+    vid: { modelId: VIDEO_MODELS[0].id, duration: 8, resolution: null, aspect: null, audio: true, startFrame: null, endFrame: null, refs: [] },
+    pollTimer: null
+  };
+  function saveJobs() {
+    const slim = state.jobs.map(j => ({ id: j.id, kind: j.kind, modelId: j.modelId, modelName: j.modelName, provider: j.provider, endpoint: j.endpoint, status: j.status, progress: j.progress, logs: j.logs, outputs: j.outputs, error: j.error, meta: j.meta, fal: j.fal, createdAt: j.createdAt, completedAt: j.completedAt }));
+    try { localStorage.setItem(JOBS_LS, JSON.stringify(slim)); } catch {}
+  }
+  const imgModel = () => IMAGE_MODELS.find(m => m.id === state.img.modelId);
+  const vidModel = () => VIDEO_MODELS.find(m => m.id === state.vid.modelId);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  const uuid = () => (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.floor(Math.random() * 1e9);
+  function toast(msg, type = 'err', ms = 5200) { const el = document.createElement('div'); el.className = `toast ${type}`; el.textContent = msg; $('#toasts').appendChild(el); setTimeout(() => el.remove(), ms); }
+  const readDataUri = file => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(file); });
+  async function uploadFile(file) { return { id: uuid(), url: await readDataUri(file) }; }
+  const parseSeed = v => (v !== '' && v != null && Number.isFinite(+v)) ? +v : null;
+
+  // ---------------- Navigation ----------------
+  $$('.nav-item').forEach(btn => btn.addEventListener('click', () => {
+    $$('.nav-item').forEach(b => b.classList.toggle('active', b === btn));
+    $$('.view').forEach(v => v.classList.toggle('active', v.id === `view-${btn.dataset.view}`));
+    if (btn.dataset.view === 'gallery') renderGallery();
+  }));
+
+  function renderChips(container, values, active, onPick, labelFn = v => v) {
+    container.innerHTML = '';
+    values.forEach(v => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (v === active ? ' active' : ''); b.textContent = labelFn(v); b.addEventListener('click', () => onPick(v)); container.appendChild(b); });
+  }
+
+  function renderImageControls() {
+    const m = imgModel();
+    const wrap = $('#img-models'); wrap.innerHTML = '';
+    IMAGE_MODELS.forEach(mm => {
+      const c = document.createElement('button'); c.type = 'button'; c.className = 'model-card' + (mm.id === state.img.modelId ? ' active' : '');
+      c.innerHTML = `<div class="mc-info"><div class="mc-name">${esc(mm.name)} <small>${esc(mm.provider)}</small></div><div class="mc-tag">${esc(mm.tagline)}</div></div><div class="mc-badges">${mm.supportsReference ? '<span class="badge">REF</span>' : ''}</div>`;
+      c.addEventListener('click', () => { state.img.modelId = mm.id; if (!mm.aspectRatios.includes(state.img.aspect)) state.img.aspect = mm.aspectRatios[0]; renderImageControls(); });
+      wrap.appendChild(c);
+    });
+    if (!m.aspectRatios.includes(state.img.aspect)) state.img.aspect = m.aspectRatios[0];
+    renderChips($('#img-aspect'), m.aspectRatios, state.img.aspect, v => { state.img.aspect = v; renderImageControls(); });
+    state.img.count = Math.min(state.img.count, m.maxImages || 4);
+    $('#img-count span').textContent = state.img.count;
+    $('#img-ref-field').style.display = m.supportsReference ? '' : 'none';
+    $('#img-ref-hint').textContent = m.requiresReference ? `(required — ${m.name} edits your uploaded image)` : `(optional — up to ${m.maxReferenceImages || 1}, guides style / identity)`;
+  }
+
+  function renderVideoControls() {
+    const m = vidModel();
+    const wrap = $('#vid-models'); wrap.innerHTML = '';
+    VIDEO_MODELS.forEach(mm => {
+      const c = document.createElement('button'); c.type = 'button'; c.className = 'model-card' + (mm.id === state.vid.modelId ? ' active' : '');
+      const fb = mm.supportsEndFrame ? '<span class="badge frames">START+END</span>' : mm.supportsStartFrame ? '<span class="badge frames">START</span>' : '';
+      c.innerHTML = `<div class="mc-info"><div class="mc-name">${esc(mm.name)} <small>${esc(mm.provider)}</small></div><div class="mc-tag">${esc(mm.tagline)}</div></div><div class="mc-badges">${fb}</div>`;
+      c.addEventListener('click', () => { state.vid.modelId = mm.id; renderVideoControls(); });
+      wrap.appendChild(c);
+    });
+    const durWrap = $('#vid-duration');
+    if (m.durationRange) {
+      const max = Math.min(m.durationRange.max, MAX_VIDEO_SECONDS), min = m.durationRange.min;
+      state.vid.duration = Math.min(Math.max(state.vid.duration, min), max);
+      durWrap.innerHTML = `<div class="duration-slider"><input type="range" min="${min}" max="${max}" step="1" value="${state.vid.duration}" /><span class="duration-value">${state.vid.duration}s</span></div>`;
+      const sl = durWrap.querySelector('input');
+      sl.addEventListener('input', () => { state.vid.duration = Number(sl.value); durWrap.querySelector('.duration-value').textContent = `${state.vid.duration}s`; });
+      $('#vid-duration-note').textContent = `${m.name} supports ${min}–${max}s · platform max ${MAX_VIDEO_SECONDS}s`;
+    } else {
+      const ds = m.durations.filter(d => d <= MAX_VIDEO_SECONDS);
+      if (!ds.includes(state.vid.duration)) state.vid.duration = nearest(state.vid.duration, ds);
+      renderChips(durWrap, ds, state.vid.duration, v => { state.vid.duration = v; renderVideoControls(); }, v => `${v}s`);
+      $('#vid-duration-note').textContent = `${m.name} supports ${ds.map(d => d + 's').join(' / ')} · platform max ${MAX_VIDEO_SECONDS}s`;
+    }
+    $('#vid-audio-field').style.display = m.supportsAudio ? '' : 'none';
+    $('#vid-audio').classList.toggle('on', state.vid.audio);
+    $('#vid-audio').setAttribute('aria-pressed', String(state.vid.audio));
+    if (!m.resolutions.includes(state.vid.resolution)) state.vid.resolution = m.defaultResolution;
+    renderChips($('#vid-resolution'), m.resolutions, state.vid.resolution, v => { state.vid.resolution = v; renderVideoControls(); });
+    if (!m.aspectRatios.includes(state.vid.aspect)) state.vid.aspect = m.aspectRatios[0];
+    renderChips($('#vid-aspect'), m.aspectRatios, state.vid.aspect, v => { state.vid.aspect = v; renderVideoControls(); });
+    $('#vid-aspect-field').style.display = state.vid.startFrame ? 'none' : '';
+    const endSupported = m.supportsEndFrame;
+    $('#frame-end').classList.toggle('disabled', !endSupported);
+    const note = $('#vid-frames-note');
+    if (m.requiresBothFrames) note.innerHTML = `<b>${esc(m.name)}</b> interpolates between two keyframes — upload BOTH a start and an end frame.`;
+    else if (endSupported) note.innerHTML = `Optional. Pin the first frame, or both first <b>and</b> last frame for a controlled A→B shot.`;
+    else note.innerHTML = `<b>${esc(m.name)}</b> supports a start frame. For end-frame control pick <b>Seedance 2.0</b>, <b>Kling 3.0 Pro</b> or <b>Vidu Q1</b>.`;
+    if (!endSupported && state.vid.endFrame) { state.vid.endFrame = null; renderFrameSlot('end'); }
+    const refsAvailable = m.supportsReference && !state.vid.startFrame;
+    $('#vid-ref-field').style.display = refsAvailable ? '' : 'none';
+    if (refsAvailable) $('#vid-ref-hint').textContent = `(optional, up to ${m.maxReferenceImages} — ${m.referenceHint || 'guide characters and objects'})`;
+    else if (state.vid.refs.length && !m.supportsReference) { state.vid.refs = []; renderVidRefThumbs(); }
+  }
+  $('#vid-audio').addEventListener('click', () => { state.vid.audio = !state.vid.audio; renderVideoControls(); });
+
+  // ---------------- Reference uploads ----------------
+  function wireDrop(dropSel, inputSel, add) {
+    const drop = $(dropSel), input = $(inputSel);
+    drop.addEventListener('click', () => input.click());
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+    drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('drag'); add([...e.dataTransfer.files]); });
+    input.addEventListener('change', () => { add([...input.files]); input.value = ''; });
+  }
+  async function addRefFiles(files) {
+    const m = imgModel(), max = m.maxReferenceImages || 1;
+    for (const f of files.filter(f => f.type.startsWith('image/'))) {
+      if (state.img.refs.length >= max) { toast(`${m.name} accepts up to ${max} reference image${max > 1 ? 's' : ''}.`); break; }
+      try { state.img.refs.push(await uploadFile(f)); renderRefThumbs(); } catch (e) { toast(e.message); }
+    }
+  }
+  function renderRefThumbs() {
+    const row = $('#img-ref-thumbs'); row.innerHTML = '';
+    state.img.refs.forEach((r, i) => { const t = document.createElement('div'); t.className = 'thumb'; t.innerHTML = `<img alt=""><button type="button" title="Remove">×</button>`; t.querySelector('img').src = r.url; t.querySelector('button').addEventListener('click', () => { state.img.refs.splice(i, 1); renderRefThumbs(); }); row.appendChild(t); });
+  }
+  async function addVidRefFiles(files) {
+    const m = vidModel(), max = m.maxReferenceImages || 1;
+    for (const f of files.filter(f => f.type.startsWith('image/'))) {
+      if (state.vid.refs.length >= max) { toast(`${m.name} accepts up to ${max} reference images.`); break; }
+      try { state.vid.refs.push(await uploadFile(f)); renderVidRefThumbs(); } catch (e) { toast(e.message); }
+    }
+  }
+  function renderVidRefThumbs() {
+    const row = $('#vid-ref-thumbs'); row.innerHTML = '';
+    state.vid.refs.forEach((r, i) => { const t = document.createElement('div'); t.className = 'thumb'; t.innerHTML = `<img alt=""><button type="button" title="Remove">×</button>`; t.querySelector('img').src = r.url; t.querySelector('button').addEventListener('click', () => { state.vid.refs.splice(i, 1); renderVidRefThumbs(); }); row.appendChild(t); });
+  }
+  wireDrop('#img-ref-drop', '#img-ref-input', addRefFiles);
+  wireDrop('#vid-ref-drop', '#vid-ref-input', addVidRefFiles);
+
+  // ---------------- Keyframe slots ----------------
+  function setupFrameSlot(which) {
+    const slot = $(`#frame-${which}`), input = slot.querySelector('input[type=file]');
+    slot.addEventListener('click', e => {
+      if (e.target.closest('.frame-remove')) return;
+      if (slot.classList.contains('disabled')) { toast('This model does not support an end frame — pick Seedance 2.0, Kling 3.0 Pro or Vidu Q1.', 'err', 4200); return; }
+      input.click();
+    });
+    slot.addEventListener('dragover', e => { e.preventDefault(); if (!slot.classList.contains('disabled')) slot.classList.add('drag'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag'));
+    slot.addEventListener('drop', async e => { e.preventDefault(); slot.classList.remove('drag'); if (slot.classList.contains('disabled')) return; const f = [...e.dataTransfer.files].find(f => f.type.startsWith('image/')); if (f) await setFrame(which, f); });
+    input.addEventListener('change', async () => { if (input.files[0]) await setFrame(which, input.files[0]); input.value = ''; });
+    slot.querySelector('.frame-remove').addEventListener('click', () => { state.vid[which === 'start' ? 'startFrame' : 'endFrame'] = null; renderFrameSlot(which); renderVideoControls(); });
+  }
+  async function setFrame(which, file) { try { const up = await uploadFile(file); state.vid[which === 'start' ? 'startFrame' : 'endFrame'] = up; renderFrameSlot(which); renderVideoControls(); } catch (e) { toast(e.message); } }
+  function renderFrameSlot(which) {
+    const slot = $(`#frame-${which}`), frame = state.vid[which === 'start' ? 'startFrame' : 'endFrame'];
+    slot.classList.toggle('filled', !!frame);
+    slot.querySelector('.frame-empty').hidden = !!frame;
+    const prev = slot.querySelector('.frame-preview'); prev.hidden = !frame;
+    if (frame) prev.querySelector('img').src = frame.url;
+  }
+  setupFrameSlot('start'); setupFrameSlot('end');
+
+  $('#img-count').addEventListener('click', e => {
+    const step = e.target.closest('[data-step]'); if (!step) return;
+    const max = imgModel().maxImages || 4;
+    state.img.count = Math.min(Math.max(state.img.count + Number(step.dataset.step), 1), max);
+    $('#img-count span').textContent = state.img.count;
+  });
+
+  // ---------------- Generation ----------------
+  function showNote(el, msg, isError = false) { el.textContent = msg; el.classList.toggle('error', isError); if (isError) toast(msg); }
+
+  $('#img-generate').addEventListener('click', async () => {
+    const btn = $('#img-generate'), note = $('#img-note'), prompt = $('#img-prompt').value.trim(), m = imgModel();
+    note.classList.remove('error'); note.textContent = '';
+    if (!getKey()) return showNote(note, 'Add your fal.ai API key in Settings first.', true);
+    if (!prompt) return showNote(note, 'Write a prompt first.', true);
+    if (m.requiresReference && !state.img.refs.length) return showNote(note, `${m.name} needs a reference image — upload one above.`, true);
+    btn.disabled = true; $('.btn-label', btn).textContent = 'Submitting…';
+    try {
+      const { endpoint, payload } = m.build({ prompt, aspectRatio: state.img.aspect, numImages: state.img.count, seed: parseSeed($('#img-seed').value.trim()), referenceImages: state.img.refs.slice(0, m.maxReferenceImages || 0).map(r => r.url) });
+      await launchJob({ kind: 'image', model: m, endpoint, payload, meta: { prompt, aspectRatio: state.img.aspect, numImages: payload.num_images, referenceCount: state.img.refs.length } });
+      showNote(note, 'Queued — tracking on the right.');
+    } catch (e) { showNote(note, e.message, true); }
+    finally { btn.disabled = false; $('.btn-label', btn).textContent = 'Generate'; }
+  });
+
+  $('#vid-generate').addEventListener('click', async () => {
+    const btn = $('#vid-generate'), note = $('#vid-note'), prompt = $('#vid-prompt').value.trim(), m = vidModel();
+    note.classList.remove('error'); note.textContent = '';
+    if (!getKey()) return showNote(note, 'Add your fal.ai API key in Settings first.', true);
+    if (!prompt) return showNote(note, 'Describe the shot first.', true);
+    const start = state.vid.startFrame, end = state.vid.endFrame;
+    if (end && !start) return showNote(note, 'Add a start frame to go with your end frame.', true);
+    if (end && !m.supportsEndFrame) return showNote(note, `${m.name} does not support an end frame.`, true);
+    if (m.requiresBothFrames && (!start || !end)) return showNote(note, `${m.name} needs BOTH start and end frames.`, true);
+    btn.disabled = true; $('.btn-label', btn).textContent = 'Submitting…';
+    try {
+      const refs = (m.supportsReference && !start) ? state.vid.refs.slice(0, m.maxReferenceImages || 0).map(r => r.url) : [];
+      const { endpoint, payload, duration } = m.build({ prompt, aspectRatio: state.vid.aspect, resolution: state.vid.resolution, duration: state.vid.duration, audio: state.vid.audio, startFrame: start ? start.url : null, endFrame: end ? end.url : null, referenceImages: refs, seed: parseSeed($('#vid-seed').value.trim()) });
+      await launchJob({ kind: 'video', model: m, endpoint, payload, meta: { prompt, aspectRatio: state.vid.aspect, resolution: payload.resolution || state.vid.resolution || m.defaultResolution, duration, audio: payload.generate_audio === true, hasStartFrame: !!start, hasEndFrame: !!end, referenceCount: refs.length } });
+      showNote(note, 'Queued — video generation typically takes 1–4 minutes.');
+    } catch (e) { showNote(note, e.message, true); }
+    finally { btn.disabled = false; $('.btn-label', btn).textContent = 'Generate video'; }
+  });
+
+  async function launchJob({ kind, model, endpoint, payload, meta }) {
+    const submission = await falSubmit(endpoint, payload);
+    const job = { id: uuid(), kind, modelId: model.id, modelName: model.name, provider: model.provider, endpoint, status: 'queued', progress: 'Queued', logs: [], outputs: [], error: null, meta, fal: submission, createdAt: Date.now() };
+    state.jobs.unshift(job); saveJobs(); renderJobs(); pollSoon(1200);
+  }
+
+  // ---------------- Polling ----------------
+  function pollSoon(delay = 2000) { clearTimeout(state.pollTimer); state.pollTimer = setTimeout(pollPending, delay); }
+  async function pollPending() {
+    const pending = state.jobs.filter(j => j.status === 'queued' || j.status === 'running');
+    for (const job of pending) {
+      try {
+        const s = await falStatus(job.fal.statusUrl);
+        if (s.status === 'IN_QUEUE') { job.status = 'queued'; job.progress = s.queuePosition != null ? `Position ${s.queuePosition} in queue` : 'Queued'; }
+        else if (s.status === 'IN_PROGRESS') { job.status = 'running'; job.progress = 'Generating…'; if (s.logs && s.logs.length) job.logs = s.logs.slice(-8); }
+        else if (s.status === 'COMPLETED') {
+          const payload = await falResult(job.fal.responseUrl);
+          job.outputs = collectOutputs(job, payload);
+          job.status = job.outputs.length ? 'completed' : 'failed';
+          if (!job.outputs.length) job.error = 'The model returned no media.';
+          job.progress = null; job.completedAt = Date.now();
+        }
+      } catch (e) { if (e.status && e.status >= 400 && e.status < 500 && e.status !== 429) { job.status = 'failed'; job.error = e.message; } }
+    }
+    saveJobs(); renderJobs(); if ($('#view-gallery').classList.contains('active')) renderGallery();
+    if (state.jobs.some(j => j.status === 'queued' || j.status === 'running')) pollSoon(2600);
+  }
+  function collectOutputs(job, payload) {
+    const found = [];
+    const push = (it, type) => { if (it && it.url) found.push({ url: it.url, type, width: it.width, height: it.height }); };
+    if (Array.isArray(payload.images)) payload.images.forEach(i => push(i, 'image'));
+    push(payload.image, 'image'); push(payload.video, 'video');
+    if (Array.isArray(payload.videos)) payload.videos.forEach(v => push(v, 'video'));
+    if (payload.seed != null) job.meta.seedUsed = payload.seed;
+    return found.map(o => ({ type: o.type, url: o.url, width: o.width, height: o.height }));
+  }
+
+  // ---------------- Rendering ----------------
+  async function download(url, name) {
+    try { const r = await fetch(url); const b = await r.blob(); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = name; a.click(); URL.revokeObjectURL(u); }
+    catch { window.open(url, '_blank'); }
+  }
+  function jobCard(job) {
+    const card = document.createElement('div'); card.className = `job-card ${job.kind}`;
+    const media = document.createElement('div'); media.className = 'job-media';
+    if (job.status === 'queued' || job.status === 'running') {
+      media.innerHTML = `<div class="job-progress"><div class="spinner"></div><span class="status-text">${job.status === 'queued' ? esc(job.progress || 'Queued') : 'Generating…'}</span>${job.logs && job.logs.length ? `<span class="status-sub">${esc(job.logs[job.logs.length - 1]).slice(0, 120)}</span>` : ''}</div><div class="shimmer"></div>`;
+    } else if (job.status === 'failed') {
+      media.innerHTML = `<div class="job-error"><div class="err-icon">⚠</div><p>${esc(job.error || 'Generation failed')}</p></div>`;
+    } else if (job.kind === 'video') {
+      media.innerHTML = `<video src="${esc(job.outputs[0].url)}" controls preload="metadata" playsinline></video>`;
+    } else if (job.outputs.length > 1) {
+      const grid = document.createElement('div'); grid.className = 'multi';
+      job.outputs.forEach((o, i) => { const img = document.createElement('img'); img.src = o.url; img.loading = 'lazy'; img.addEventListener('click', () => openLightbox(job, i)); grid.appendChild(img); });
+      media.appendChild(grid);
+    } else if (job.outputs.length === 1) {
+      const img = document.createElement('img'); img.src = job.outputs[0].url; img.loading = 'lazy'; img.addEventListener('click', () => openLightbox(job, 0)); media.appendChild(img);
+    }
+    card.appendChild(media);
+    const info = document.createElement('div'); info.className = 'job-info';
+    const tags = [`<span class="tag model">${esc(job.modelName)}</span>`];
+    if (job.kind === 'video') {
+      if (job.meta && job.meta.duration) tags.push(`<span class="tag">${esc(job.meta.duration)}s</span>`);
+      if (job.meta && job.meta.resolution) tags.push(`<span class="tag">${esc(job.meta.resolution)}</span>`);
+      if (job.meta && job.meta.hasStartFrame && job.meta.hasEndFrame) tags.push('<span class="tag">A→B</span>');
+      else if (job.meta && job.meta.hasStartFrame) tags.push('<span class="tag">I2V</span>');
+      if (job.meta && job.meta.referenceCount) tags.push(`<span class="tag">${job.meta.referenceCount} REF</span>`);
+      if (job.meta && job.meta.audio) tags.push('<span class="tag">♪ AUDIO</span>');
+    } else {
+      if (job.meta && job.meta.aspectRatio) tags.push(`<span class="tag">${esc(job.meta.aspectRatio)}</span>`);
+      if (job.meta && job.meta.referenceCount) tags.push(`<span class="tag">${job.meta.referenceCount} REF</span>`);
+    }
+    info.innerHTML = `<div class="job-prompt" title="${esc(job.meta && job.meta.prompt)}">${esc(job.meta && job.meta.prompt || '')}</div><div class="job-meta">${tags.join('')}<div class="job-actions">${job.status === 'completed' ? `<button class="icon-btn dl" title="Download"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg></button>` : ''}<button class="icon-btn danger del" title="Delete"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13h8l1-13"/></svg></button></div></div>`;
+    card.appendChild(info);
+    const dl = info.querySelector('.dl'); if (dl) dl.addEventListener('click', () => job.outputs.forEach((o, i) => download(o.url, `alcon-${job.kind}-${job.id.slice(0, 8)}-${i}${o.type === 'video' ? '.mp4' : '.png'}`)));
+    info.querySelector('.del').addEventListener('click', () => { state.jobs = state.jobs.filter(j => j.id !== job.id); saveJobs(); renderJobs(); renderGallery(); });
+    return card;
+  }
+  function renderInto(gridSel, emptySel, jobs) { const g = $(gridSel); g.innerHTML = ''; jobs.forEach(j => g.appendChild(jobCard(j))); $(emptySel).classList.toggle('show', !jobs.length); }
+  function renderJobs() { renderInto('#img-jobs', '#img-empty', state.jobs.filter(j => j.kind === 'image')); renderInto('#vid-jobs', '#vid-empty', state.jobs.filter(j => j.kind === 'video')); }
+  function renderGallery() { renderInto('#gallery-jobs', '#gallery-empty', state.jobs.filter(j => j.status === 'completed' && (state.galleryFilter === 'all' || j.kind === state.galleryFilter))); }
+  $('#gallery-filter').addEventListener('click', e => { const c = e.target.closest('.chip'); if (!c) return; state.galleryFilter = c.dataset.filter; $$('#gallery-filter .chip').forEach(x => x.classList.toggle('active', x === c)); renderGallery(); });
+
+  // ---------------- Lightbox ----------------
+  function openLightbox(job, index = 0) {
+    const out = job.outputs[index]; if (!out) return;
+    $('#lb-body').innerHTML = out.type === 'video' ? `<video src="${esc(out.url)}" controls autoplay playsinline></video>` : `<img src="${esc(out.url)}" alt="">`;
+    $('#lb-caption').textContent = `${job.modelName} — ${job.meta && job.meta.prompt || ''}`;
+    $('#lightbox').hidden = false;
+  }
+  const closeLb = () => { $('#lightbox').hidden = true; $('#lb-body').innerHTML = ''; };
+  $('#lb-close').addEventListener('click', closeLb);
+  $('#lightbox').addEventListener('click', e => { if (e.target === e.currentTarget) closeLb(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+  // ---------------- Settings ----------------
+  function refreshApiStatus() {
+    const el = $('#api-status'), key = getKey();
+    el.className = 'api-status ' + (key ? 'ok' : 'missing');
+    $('.label', el).textContent = key ? `API connected (${key.slice(0, 6)}…${key.slice(-4)})` : 'Add API key in Settings';
+    $('#settings-key-status').textContent = key ? `Key saved in this browser (${key.slice(0, 6)}…${key.slice(-4)}).` : 'No key configured.';
+  }
+  $('#settings-save').addEventListener('click', async () => {
+    const input = $('#settings-key'), key = input.value.trim();
+    if (key.length < 8) return toast('Paste a valid fal.ai API key first.');
+    const test = await falTestKey(key).catch(() => ({ ok: true, message: 'Saved (could not reach fal.ai to verify).' }));
+    if (!test.ok) return toast(test.message);
+    localStorage.setItem(KEY_LS, key); input.value = '';
+    toast(test.message, 'ok'); refreshApiStatus();
+  });
+  $('#settings-test').addEventListener('click', async () => {
+    const key = getKey(); if (!key) return toast('No API key configured yet.');
+    const test = await falTestKey(key).catch(e => ({ ok: false, message: `Could not reach fal.ai: ${e.message}` }));
+    toast(test.message, test.ok ? 'ok' : 'err');
+  });
+
+  // ---------------- Init ----------------
+  renderImageControls();
+  renderVideoControls();
+  refreshApiStatus();
+  renderJobs();
+  if (state.jobs.some(j => j.status === 'queued' || j.status === 'running')) pollSoon(600);
+})();
+  </script>
+</body>
+</html>
