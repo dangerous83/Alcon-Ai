@@ -8,22 +8,24 @@ One API key (from [fal.ai](https://fal.ai)) unlocks every model in the platform.
 ## What's inside
 
 ### 🎬 Video Studio — up to 15 s per shot
-| Model | Provider | Start frame | End frame | Max res |
-|---|---|---|---|---|
-| **Seedance 1.0 Pro** | ByteDance | ✅ | — | 1080p |
-| **Seedance 1.0 Lite** | ByteDance | ✅ | ✅ | 1080p |
-| **Kling 2.5 Turbo Pro** | Kuaishou | ✅ | — | 1080p |
-| **Vidu Q1** (start→end interpolation) | Vidu | ✅ | ✅ | 1080p |
-| **Hailuo 02 Pro** | MiniMax | ✅ | — | 1080p |
+| Model | Provider | Duration | Start frame | End frame | Audio |
+|---|---|---|---|---|---|
+| **Seedance 2.0** | ByteDance | 4–15 s | ✅ | ✅ | ✅ native |
+| **Kling 3.0 Pro** | Kuaishou | 3–15 s | ✅ | ✅ | ✅ native |
+| **Kling 2.5 Turbo Pro** | Kuaishou | 5 / 10 s | ✅ | ✅ | — |
+| **Seedance 1.0 Pro** | ByteDance | 5 / 10 s | ✅ | ✅ | — |
+| **Vidu Q1** (start→end interpolation) | Vidu | 5 s | ✅ required | ✅ required | — |
+| **Hailuo 02 Pro** | MiniMax | 6 s | ✅ | — | — |
 
 - **Start-frame & end-frame keyframing** — pin the first frame, or both first *and* last frame for a controlled A→B shot
-- Duration selector (hard platform cap: **15 seconds**), resolution and aspect-ratio control
+- **Reference-to-video** (Seedance 2.0) — upload up to 4 reference images and address them as `@Image1`, `@Image2`… in the prompt
+- Duration slider (hard platform cap: **15 seconds**), resolution, aspect-ratio and audio control
 - Drag & drop image upload for keyframes
 
 ### 🖼 Image Studio
 | Model | Provider | Reference images |
 |---|---|---|
-| **Seedream 4.0** | ByteDance | ✅ up to 6 (edit / identity / style) |
+| **Seedream 4.5** | ByteDance | ✅ up to 6 (edit / identity / style) |
 | **FLUX 1.1 Pro Ultra** | Black Forest Labs | — |
 | **FLUX.1 Kontext [max]** | Black Forest Labs | ✅ instruction-based editing |
 | **Imagen 4** | Google | — |

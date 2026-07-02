@@ -149,21 +149,24 @@ app.post('/api/generate/image', async (req, res) => {
 
 app.post('/api/generate/video', async (req, res) => {
   try {
-    const { prompt, modelId, aspectRatio, resolution, duration,
-            startFrameUploadId, endFrameUploadId, seed } = req.body || {};
+    const { prompt, modelId, aspectRatio, resolution, duration, audio,
+            startFrameUploadId, endFrameUploadId, referenceUploadIds, seed } = req.body || {};
     if (!prompt?.trim()) return badRequest(res, 'Describe the shot you want to generate.');
     const model = findModel('video', modelId);
     if (!model) return badRequest(res, `Unknown video model: ${modelId}`);
 
-    const requested = Math.min(Math.max(parseInt(duration, 10) || 5, 2), MAX_VIDEO_SECONDS);
+    const requested = Math.min(Math.max(parseInt(duration, 10) || model.defaultDuration || 5, 2), MAX_VIDEO_SECONDS);
     const startFrame = uploadToDataUri(startFrameUploadId);
     const endFrame = uploadToDataUri(endFrameUploadId);
+    const referenceImages = model.supportsReference
+      ? (referenceUploadIds || []).slice(0, model.maxReferenceImages || 0).map(uploadToDataUri).filter(Boolean)
+      : [];
 
     if (endFrame && !startFrame) {
       return badRequest(res, 'An end frame needs a start frame — upload the start frame too.');
     }
     if (endFrame && !model.supportsEndFrame) {
-      return badRequest(res, `${model.name} does not support an end frame. Use Seedance 1.0 Lite or Vidu Q1 for start→end keyframing.`);
+      return badRequest(res, `${model.name} does not support an end frame. Pick Seedance 2.0, Kling 3.0 Pro or Vidu Q1 for start→end keyframing.`);
     }
     if (model.requiresBothFrames && (!startFrame || !endFrame)) {
       return badRequest(res, `${model.name} needs BOTH a start and an end frame.`);
@@ -174,8 +177,10 @@ app.post('/api/generate/video', async (req, res) => {
       aspectRatio,
       resolution,
       duration: requested,
+      audio: audio !== false,
       startFrame,
       endFrame,
+      referenceImages,
       seed: Number.isFinite(+seed) && seed !== '' && seed != null ? +seed : null
     });
 
@@ -190,8 +195,10 @@ app.post('/api/generate/video', async (req, res) => {
         resolution: payload.resolution || resolution || model.defaultResolution,
         duration: finalDuration,
         requestedDuration: requested,
+        audio: payload.generate_audio === true,
         hasStartFrame: !!startFrame,
         hasEndFrame: !!endFrame,
+        referenceCount: referenceImages.length,
         startFrameUploadId: startFrameUploadId || null,
         endFrameUploadId: endFrameUploadId || null
       }

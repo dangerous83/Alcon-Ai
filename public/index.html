@@ -144,6 +144,12 @@
             <label>Resolution</label>
             <div class="chip-row" id="vid-resolution"></div>
           </div>
+          <div class="field" id="vid-audio-field">
+            <label>Audio</label>
+            <button type="button" class="switch" id="vid-audio" aria-pressed="true">
+              <span class="knob"></span>
+            </button>
+          </div>
         </div>
 
         <div class="field" id="vid-aspect-field">
@@ -181,6 +187,18 @@
             </div>
           </div>
           <div class="micro-note" id="vid-frames-note"></div>
+        </div>
+
+        <div class="field" id="vid-ref-field" style="display:none">
+          <label>Reference images <em id="vid-ref-hint">(optional)</em></label>
+          <div class="dropzone" id="vid-ref-drop">
+            <input type="file" id="vid-ref-input" accept="image/*" multiple hidden />
+            <div class="dz-inner">
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              <span>Add reference images</span>
+            </div>
+          </div>
+          <div class="thumb-row" id="vid-ref-thumbs"></div>
         </div>
 
         <div class="field">

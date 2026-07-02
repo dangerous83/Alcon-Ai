@@ -255,6 +255,7 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
   color: var(--text-3); font-size: 12px; font-weight: 600;
 }
+.frame-empty[hidden] { display: none; }
 .frame-empty svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .frame-preview { position: absolute; inset: 0; }
 .frame-preview img { width: 100%; height: 100%; object-fit: cover; }
@@ -275,6 +276,54 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
 
 .micro-note { font-size: 11.5px; color: var(--text-3); margin-top: 7px; line-height: 1.5; }
 .micro-note b { color: var(--text-2); }
+
+/* duration slider */
+.duration-slider { display: flex; align-items: center; gap: 14px; width: 100%; padding: 4px 2px; }
+.duration-slider input[type="range"] {
+  flex: 1; -webkit-appearance: none; appearance: none;
+  height: 4px; border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent-video), var(--accent-video-2));
+  outline: none; cursor: pointer;
+}
+.duration-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; border: 3px solid var(--accent-video);
+  box-shadow: 0 2px 10px rgba(255,92,135,.4);
+}
+.duration-slider input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; border: 3px solid var(--accent-video);
+}
+.duration-value {
+  min-width: 38px; text-align: center;
+  font-family: var(--mono); font-weight: 600; font-size: 13px;
+  color: var(--text);
+  background: var(--bg-3); border: 1px solid var(--line);
+  padding: 5px 8px; border-radius: 7px;
+}
+
+/* audio switch */
+.switch {
+  position: relative;
+  width: 46px; height: 26px;
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  background: var(--bg-3);
+  transition: all .18s;
+  display: block;
+}
+.switch .knob {
+  position: absolute; top: 2px; left: 2px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--text-3);
+  transition: all .18s;
+}
+.switch.on {
+  background: linear-gradient(90deg, var(--accent-video), var(--accent-video-2));
+  border-color: transparent;
+}
+.switch.on .knob { left: 22px; background: #fff; }
 
 /* generate button */
 .generate-btn {

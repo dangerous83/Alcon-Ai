@@ -10,7 +10,8 @@
     jobs: [],
     galleryFilter: 'all',
     img: { modelId: null, aspect: null, count: 1, seed: '', refs: [] },
-    vid: { modelId: null, duration: 5, resolution: null, aspect: null, seed: '', startFrame: null, endFrame: null },
+    vid: { modelId: null, duration: 8, resolution: null, aspect: null, seed: '', audio: true,
+           startFrame: null, endFrame: null, refs: [] },
     pollTimer: null
   };
 
@@ -135,15 +136,39 @@
       wrap.appendChild(card);
     });
 
-    // durations — model's own list, hard-capped at 15s platform-wide
-    const durations = m.durations.filter(d => d <= state.catalog.maxVideoSeconds);
-    if (!durations.includes(state.vid.duration)) {
-      state.vid.duration = durations.reduce((best, d) =>
-        Math.abs(d - state.vid.duration) < Math.abs(best - state.vid.duration) ? d : best, durations[0]);
+    // durations — slider for continuous ranges, chips for fixed steps.
+    // Hard-capped at 15s platform-wide.
+    const durWrap = $('#vid-duration');
+    if (m.durationRange) {
+      const max = Math.min(m.durationRange.max, state.catalog.maxVideoSeconds);
+      const min = m.durationRange.min;
+      state.vid.duration = Math.min(Math.max(state.vid.duration, min), max);
+      durWrap.innerHTML = `
+        <div class="duration-slider">
+          <input type="range" min="${min}" max="${max}" step="1" value="${state.vid.duration}" />
+          <span class="duration-value">${state.vid.duration}s</span>
+        </div>`;
+      const slider = durWrap.querySelector('input');
+      slider.addEventListener('input', () => {
+        state.vid.duration = Number(slider.value);
+        durWrap.querySelector('.duration-value').textContent = `${state.vid.duration}s`;
+      });
+      $('#vid-duration-note').textContent = `${m.name} supports ${min}–${max}s · platform max ${state.catalog.maxVideoSeconds}s`;
+    } else {
+      const durations = m.durations.filter(d => d <= state.catalog.maxVideoSeconds);
+      if (!durations.includes(state.vid.duration)) {
+        state.vid.duration = durations.reduce((best, d) =>
+          Math.abs(d - state.vid.duration) < Math.abs(best - state.vid.duration) ? d : best, durations[0]);
+      }
+      renderChips(durWrap, durations, state.vid.duration,
+        v => { state.vid.duration = v; renderVideoControls(); }, v => `${v}s`);
+      $('#vid-duration-note').textContent = `${m.name} supports ${durations.map(d => d + 's').join(' / ')} · platform max ${state.catalog.maxVideoSeconds}s`;
     }
-    renderChips($('#vid-duration'), durations, state.vid.duration,
-      v => { state.vid.duration = v; renderVideoControls(); }, v => `${v}s`);
-    $('#vid-duration-note').textContent = `${m.name} supports ${durations.map(d => d + 's').join(' / ')} · platform max ${state.catalog.maxVideoSeconds}s`;
+
+    // audio toggle — only for models with native audio generation
+    $('#vid-audio-field').style.display = m.supportsAudio ? '' : 'none';
+    $('#vid-audio').setAttribute('aria-pressed', String(state.vid.audio));
+    $('#vid-audio').classList.toggle('on', state.vid.audio);
 
     if (!m.resolutions.includes(state.vid.resolution)) state.vid.resolution = m.defaultResolution;
     renderChips($('#vid-resolution'), m.resolutions, state.vid.resolution,
@@ -164,13 +189,29 @@
     } else if (endSupported) {
       note.innerHTML = `Optional. Pin the first frame, or both first <b>and</b> last frame for a controlled A→B shot.`;
     } else {
-      note.innerHTML = `<b>${esc(m.name)}</b> supports a start frame. For end-frame control pick <b>Seedance 1.0 Lite</b> or <b>Vidu Q1</b>.`;
+      note.innerHTML = `<b>${esc(m.name)}</b> supports a start frame. For end-frame control pick <b>Seedance 2.0</b>, <b>Kling 3.0 Pro</b> or <b>Vidu Q1</b>.`;
     }
     if (!endSupported && state.vid.endFrame) {
       state.vid.endFrame = null;
       renderFrameSlot('end');
     }
+
+    // reference images (Seedance 2.0 reference-to-video)
+    const refField = $('#vid-ref-field');
+    const refsAvailable = m.supportsReference && !state.vid.startFrame;
+    refField.style.display = refsAvailable ? '' : 'none';
+    if (refsAvailable) {
+      $('#vid-ref-hint').textContent = `(optional, up to ${m.maxReferenceImages} — ${m.referenceHint || 'guide characters and objects'})`;
+    } else if (state.vid.refs.length && !m.supportsReference) {
+      state.vid.refs = [];
+      renderVidRefThumbs();
+    }
   }
+
+  $('#vid-audio').addEventListener('click', () => {
+    state.vid.audio = !state.vid.audio;
+    renderVideoControls();
+  });
 
   // ------------------------------------------------------------------
   // Image reference uploads
@@ -209,6 +250,48 @@
       t.querySelector('button').addEventListener('click', () => {
         state.img.refs.splice(i, 1);
         renderRefThumbs();
+      });
+      row.appendChild(t);
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // Video reference uploads (reference-to-video)
+  // ------------------------------------------------------------------
+  const vidRefDrop = $('#vid-ref-drop');
+  const vidRefInput = $('#vid-ref-input');
+  vidRefDrop.addEventListener('click', () => vidRefInput.click());
+  vidRefDrop.addEventListener('dragover', e => { e.preventDefault(); vidRefDrop.classList.add('drag'); });
+  vidRefDrop.addEventListener('dragleave', () => vidRefDrop.classList.remove('drag'));
+  vidRefDrop.addEventListener('drop', e => {
+    e.preventDefault(); vidRefDrop.classList.remove('drag');
+    addVidRefFiles([...e.dataTransfer.files]);
+  });
+  vidRefInput.addEventListener('change', () => { addVidRefFiles([...vidRefInput.files]); vidRefInput.value = ''; });
+
+  async function addVidRefFiles(files) {
+    const m = vidModel();
+    const max = m.maxReferenceImages || 1;
+    for (const f of files.filter(f => f.type.startsWith('image/'))) {
+      if (state.vid.refs.length >= max) { toast(`${m.name} accepts up to ${max} reference images.`); break; }
+      try {
+        const up = await uploadFile(f);
+        state.vid.refs.push(up);
+        renderVidRefThumbs();
+      } catch (err) { toast(err.message); }
+    }
+  }
+
+  function renderVidRefThumbs() {
+    const row = $('#vid-ref-thumbs');
+    row.innerHTML = '';
+    state.vid.refs.forEach((r, i) => {
+      const t = document.createElement('div');
+      t.className = 'thumb';
+      t.innerHTML = `<img src="${esc(r.url)}" alt=""><button type="button" title="Remove">×</button>`;
+      t.querySelector('button').addEventListener('click', () => {
+        state.vid.refs.splice(i, 1);
+        renderVidRefThumbs();
       });
       row.appendChild(t);
     });
@@ -343,9 +426,11 @@
           aspectRatio: state.vid.aspect,
           resolution: state.vid.resolution,
           duration: state.vid.duration,
+          audio: state.vid.audio,
           seed: $('#vid-seed').value.trim() || null,
           startFrameUploadId: state.vid.startFrame?.id || null,
-          endFrameUploadId: state.vid.endFrame?.id || null
+          endFrameUploadId: state.vid.endFrame?.id || null,
+          referenceUploadIds: state.vid.startFrame ? [] : state.vid.refs.map(r => r.id)
         }
       });
       showNote(note, 'Queued — video generation typically takes 1–4 minutes.');
@@ -431,6 +516,8 @@
       if (job.meta?.resolution) metaTags.push(`<span class="tag">${esc(job.meta.resolution)}</span>`);
       if (job.meta?.hasStartFrame && job.meta?.hasEndFrame) metaTags.push('<span class="tag">A→B</span>');
       else if (job.meta?.hasStartFrame) metaTags.push('<span class="tag">I2V</span>');
+      if (job.meta?.referenceCount) metaTags.push(`<span class="tag">${job.meta.referenceCount} REF</span>`);
+      if (job.meta?.audio) metaTags.push('<span class="tag">♪ AUDIO</span>');
     } else {
       if (job.meta?.aspectRatio) metaTags.push(`<span class="tag">${esc(job.meta.aspectRatio)}</span>`);
       if (job.meta?.referenceCount) metaTags.push(`<span class="tag">${job.meta.referenceCount} REF</span>`);
