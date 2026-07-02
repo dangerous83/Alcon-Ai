@@ -1,7 +1,18 @@
 # ◆ Alcon AI Studio
 
-A professional, self-hosted **AI image & video generation platform** — a full working product, not a mockup.
+A professional **AI image & video generation platform** — a full working product, not a mockup.
 One API key (from [fal.ai](https://fal.ai)) unlocks every model in the platform.
+
+**Two ways to run it — same studio, same models:**
+
+| Edition | File | Hosting | Key storage |
+|---|---|---|---|
+| 🌐 **Browser edition** | root `index.html` | GitHub Pages / any static host | your key in *your* browser (localStorage), sent straight to fal.ai |
+| 🖥 **Server edition** | `server.js` + `public/` | Node host (Render/Railway/Docker) | key stays server-side, hidden from the browser |
+
+The **browser edition runs live on GitHub Pages** — open the Pages URL, paste your fal.ai
+key in Settings, and generate. Use the **server edition** when you want the key hidden and
+media mirrored to disk (see [DEPLOY.md](./DEPLOY.md)).
 
 ![Platform](https://img.shields.io/badge/status-production--ready-34d399) ![Node](https://img.shields.io/badge/node-%E2%89%A518-7c5cff)
 
