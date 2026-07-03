@@ -112,16 +112,23 @@
     });
 
     if (!m.aspectRatios.includes(state.img.aspect)) state.img.aspect = m.aspectRatios[0];
+    $('#img-aspect').previousElementSibling.textContent = m.factorPicker ? 'Upscale factor' : 'Aspect ratio';
     renderChips($('#img-aspect'), m.aspectRatios, state.img.aspect, v => { state.img.aspect = v; renderImageControls(); });
 
     state.img.count = Math.min(state.img.count, m.maxImages || 4);
     $('#img-count span').textContent = state.img.count;
 
+    $('#img-prompt').placeholder = m.isUpscaler
+      ? 'Optional — describe details to enhance while upscaling…'
+      : 'A cinematic editorial portrait of a violinist on a rain-soaked rooftop at dusk, neon reflections, shallow depth of field, 85mm…';
+
     const refField = $('#img-ref-field');
     refField.style.display = m.supportsReference ? '' : 'none';
-    $('#img-ref-hint').textContent = m.requiresReference
-      ? `(required — ${m.name} edits your uploaded image)`
-      : `(optional — up to ${m.maxReferenceImages || 1}, guides style / identity)`;
+    $('#img-ref-hint').textContent = m.isUpscaler
+      ? '(required — the image you want to upscale)'
+      : m.requiresReference
+        ? `(required — ${m.name} edits your uploaded image)`
+        : `(optional — up to ${m.maxReferenceImages || 1}, guides style / identity)`;
   }
 
   function renderVideoControls() {
@@ -384,9 +391,11 @@
     const m = imgModel();
     note.classList.remove('error');
     note.textContent = '';
-    if (!prompt) return showNote(note, 'Write a prompt first.', true);
+    if (!prompt && !m.promptOptional) return showNote(note, 'Write a prompt first.', true);
     if (m.requiresReference && !state.img.refs.length) {
-      return showNote(note, `${m.name} needs a reference image — upload one above.`, true);
+      return showNote(note, m.isUpscaler
+        ? 'Upload the image you want to upscale first.'
+        : `${m.name} needs a reference image — upload one above.`, true);
     }
     btn.disabled = true;
     $('.btn-label', btn).textContent = 'Submitting…';
@@ -539,6 +548,10 @@
       <div class="job-meta">
         ${metaTags.join('')}
         <div class="job-actions">
+          ${job.status === 'completed' && job.kind === 'image' ? `
+          <button class="icon-btn up" title="Upscale">
+            <svg viewBox="0 0 24 24"><path d="M15 3h6v6M21 3l-7 7M9 21H3v-6M3 21l7-7"/></svg>
+          </button>` : ''}
           ${job.status === 'completed' ? `
           <button class="icon-btn dl" title="Download">
             <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
@@ -550,6 +563,7 @@
       </div>`;
     card.appendChild(info);
 
+    info.querySelector('.up')?.addEventListener('click', () => upscaleFrom(job));
     info.querySelector('.dl')?.addEventListener('click', () => {
       job.outputs.forEach((o, i) => {
         const a = document.createElement('a');
@@ -566,6 +580,25 @@
     });
 
     return card;
+  }
+
+  // Send a finished image straight to the Clarity Upscaler in Image Studio
+  async function upscaleFrom(job) {
+    const out = job.outputs?.[0];
+    if (!out) return;
+    try {
+      const blob = await (await fetch(out.url)).blob();
+      const file = new File([blob], 'upscale-source.png', { type: blob.type || 'image/png' });
+      const up = await uploadFile(file);
+      state.img.modelId = 'clarity-upscaler';
+      state.img.refs = [up];
+      renderImageControls();
+      renderRefThumbs();
+      goToView('image');
+      toast('Image loaded into Clarity Upscaler — pick a factor and generate.', 'ok');
+    } catch (err) {
+      toast(`Could not load image for upscaling: ${err.message}`);
+    }
   }
 
   function renderInto(containerId, emptyId, jobs) {
@@ -596,12 +629,12 @@
     bolt:  '<path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/>'
   };
 
-  function statCard(cls, iconKey, value, label) {
+  function statCard(cls, iconKey, value, label, hint) {
     return `
-      <div class="stat-card ${cls}">
-        <div class="stat-icon"><svg viewBox="0 0 24 24">${ICONS[iconKey]}</svg></div>
-        <div class="stat-value">${value}</div>
-        <div class="stat-label">${label}</div>
+      <div class="kpi-cell ${cls}">
+        <div class="kpi-label"><svg viewBox="0 0 24 24">${ICONS[iconKey]}</svg><span>${label}</span></div>
+        <div class="kpi-value">${value}</div>
+        <div class="kpi-hint">${hint}</div>
       </div>`;
   }
 
@@ -612,13 +645,14 @@
     const videos = state.jobs.filter(j => j.kind === 'video');
     const active = state.jobs.filter(j => j.status === 'queued' || j.status === 'running').length;
     const totalOutputs = completed.reduce((n, j) => n + (j.outputs?.length || 0), 0);
+    const nModels = state.catalog ? state.catalog.image.length + state.catalog.video.length : 0;
     const statsEl = $('#dash-stats');
     if (statsEl) {
       statsEl.innerHTML =
-        statCard('', 'layers', totalOutputs, 'Assets created') +
-        statCard('cyan', 'image', images.length, 'Image jobs') +
-        statCard('video', 'video', videos.length, 'Video jobs') +
-        statCard('amber', 'bolt', active, active === 1 ? 'Generating now' : 'In the queue');
+        statCard('', 'layers', totalOutputs, 'Assets created', 'images & videos delivered') +
+        statCard('cyan', 'image', images.length, 'Image jobs', `${state.catalog ? state.catalog.image.length : '–'} models incl. upscaler`) +
+        statCard('video', 'video', videos.length, 'Video jobs', 'up to 1080p · 15s shots') +
+        statCard('amber', 'bolt', active, 'Generating', active ? 'running on the GPU queue' : `${nModels} models standing by`);
     }
 
     // recent completed media

@@ -7,7 +7,7 @@
   <meta name="description" content="Professional AI image & video generation — Seedance, Kling, Vidu, FLUX, Seedream, Imagen. Runs in your browser on fal.ai." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>" />
   <style>
 /* ============================================================
@@ -44,6 +44,7 @@
   --sidebar-w: 240px;
   --panel-w: 400px;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --display: 'Space Grotesk', 'Inter', sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
@@ -119,7 +120,7 @@ input, textarea { font-family: inherit; }
   content: ''; position: absolute; inset: 0; border-radius: inherit;
   background: var(--grad-brand); filter: blur(11px); opacity: .55; z-index: -1;
 }
-.brand-name { font-weight: 800; letter-spacing: .16em; font-size: 15px; }
+.brand-name { font-family: var(--display); font-weight: 700; letter-spacing: .16em; font-size: 15px; }
 .brand-name span {
   background: var(--grad-text);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -180,7 +181,7 @@ input, textarea { font-family: inherit; }
   padding: 28px 26px 40px;
 }
 .panel-header { margin-bottom: 24px; }
-.panel-header h1 { font-size: 21px; font-weight: 800; letter-spacing: -.02em; }
+.panel-header h1 { font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
 .panel-header p { color: var(--text-3); font-size: 12.5px; margin-top: 5px; }
 
 .field { margin-bottom: 18px; }
@@ -431,7 +432,7 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
 .results.wide { padding: 32px 40px 60px; }
 .results.narrow { max-width: 760px; }
 .results-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
-.results-head h2 { font-size: 18px; font-weight: 800; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
+.results-head h2 { font-family: var(--display); font-size: 19px; font-weight: 700; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
 .results-head h2::before {
   content: ''; width: 4px; height: 18px; border-radius: 3px;
   background: var(--grad-brand); box-shadow: 0 0 12px rgba(124,92,255,.6);
@@ -585,175 +586,267 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
 }
 
 /* ============================================================
-   Dashboard / Overview
+   Dashboard / Overview — editorial, high-impact
    ============================================================ */
-.dashboard {
-  flex: 1; min-width: 0; overflow-y: auto;
-  padding: 36px 44px 64px;
-}
-.dash-inner { max-width: 1180px; margin: 0 auto; }
+.dashboard { flex: 1; min-width: 0; overflow-y: auto; padding: 34px 48px 72px; }
+.dash-inner { max-width: 1240px; margin: 0 auto; }
 
-/* Hero */
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.dash-inner > * { animation: rise .55s cubic-bezier(.22, .8, .3, 1) both; }
+.dash-inner > *:nth-child(2) { animation-delay: .06s; }
+.dash-inner > *:nth-child(3) { animation-delay: .12s; }
+.dash-inner > *:nth-child(4) { animation-delay: .17s; }
+.dash-inner > *:nth-child(5) { animation-delay: .22s; }
+.dash-inner > *:nth-child(6) { animation-delay: .26s; }
+.dash-inner > *:nth-child(7) { animation-delay: .3s; }
+.dash-inner > *:nth-child(8) { animation-delay: .34s; }
+
+/* ---- Hero ---- */
 .dash-hero {
   position: relative;
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: 24px; align-items: center;
   border: 1px solid var(--line);
   border-radius: var(--radius-l);
-  background:
-    radial-gradient(600px 300px at 88% -40%, rgba(124,92,255,.28), transparent 60%),
-    radial-gradient(500px 320px at 10% 140%, rgba(34,211,238,.14), transparent 60%),
-    linear-gradient(120deg, rgba(20,23,34,.85), rgba(14,17,26,.7));
+  background: linear-gradient(115deg, rgba(17, 20, 31, .92) 0%, rgba(12, 14, 22, .78) 60%, rgba(10, 12, 19, .6) 100%);
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  padding: 40px 40px 38px;
-  margin-bottom: 26px;
+  padding: 46px 48px 38px;
+  margin-bottom: 22px;
+}
+.dash-hero::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(560px 380px at 78% 14%, rgba(124, 92, 255, .22), transparent 60%),
+    radial-gradient(480px 360px at 98% 92%, rgba(34, 211, 238, .12), transparent 60%),
+    radial-gradient(420px 320px at 4% 110%, rgba(255, 92, 135, .09), transparent 55%);
 }
 .dash-hero::after {
-  content: ''; position: absolute; right: -60px; top: -60px;
-  width: 320px; height: 320px; border-radius: 50%;
-  background: var(--grad-brand); filter: blur(90px); opacity: .28; pointer-events: none;
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .55;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='0.05'/></feComponentTransfer></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");
 }
+.hero-copy { position: relative; z-index: 1; min-width: 0; }
 .dash-eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
-  font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
   color: #c4b5ff;
-  padding: 6px 12px; border-radius: 999px;
-  background: rgba(124,92,255,.12); border: 1px solid rgba(124,92,255,.28);
-  margin-bottom: 18px;
+  padding: 7px 13px; border-radius: 999px;
+  background: rgba(124, 92, 255, .12); border: 1px solid rgba(124, 92, 255, .28);
+  margin-bottom: 22px;
 }
 .dash-eyebrow .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-3); box-shadow: 0 0 10px var(--accent-3); animation: pulse-dot 2s infinite; }
 .dash-hero h1 {
-  font-size: clamp(26px, 3.4vw, 40px); font-weight: 800; letter-spacing: -.03em; line-height: 1.08;
-  max-width: 20ch;
+  font-family: var(--display);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 700; letter-spacing: -.035em; line-height: 1.03;
 }
 .dash-hero h1 .grad {
-  background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent;
+  background: var(--grad-text);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.dash-hero p { color: var(--text-2); font-size: 14.5px; line-height: 1.6; margin-top: 14px; max-width: 56ch; }
-.dash-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.dash-hero p { color: var(--text-2); font-size: 15px; line-height: 1.65; margin-top: 18px; max-width: 50ch; }
+.dash-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 .hero-btn {
   display: inline-flex; align-items: center; gap: 9px;
-  padding: 12px 20px; border-radius: var(--radius-s);
-  font-size: 13.5px; font-weight: 700; border: 1px solid transparent;
+  padding: 13px 24px; border-radius: 11px;
+  font-size: 14px; font-weight: 700; border: 1px solid transparent;
   transition: all .18s;
 }
 .hero-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.hero-btn.primary { background: var(--grad-brand); color: #fff; box-shadow: 0 8px 26px -8px rgba(124,92,255,.6); }
-.hero-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 14px 34px -10px rgba(124,92,255,.7); }
-.hero-btn.ghost { background: rgba(255,255,255,.04); border-color: var(--line-2); color: var(--text); }
-.hero-btn.ghost:hover { background: rgba(255,255,255,.08); transform: translateY(-2px); }
+.hero-btn.primary { background: var(--grad-brand); color: #fff; box-shadow: 0 10px 30px -8px rgba(124, 92, 255, .65), inset 0 1px 0 rgba(255,255,255,.25); }
+.hero-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 16px 38px -10px rgba(124, 92, 255, .75), inset 0 1px 0 rgba(255,255,255,.25); }
+.hero-btn.ghost { background: rgba(255, 255, 255, .05); border-color: var(--line-2); color: var(--text); backdrop-filter: blur(6px); }
+.hero-btn.ghost:hover { background: rgba(255, 255, 255, .1); transform: translateY(-2px); }
 
-/* Section titles */
-.dash-section-title {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin: 30px 0 16px;
+/* hero visual — layered generation stills (pure CSS) */
+.hero-visual { position: relative; z-index: 1; height: 330px; min-width: 0; }
+.hero-orb {
+  position: absolute; width: 300px; height: 300px; right: 4%; top: 14%;
+  border-radius: 50%; background: var(--grad-brand); filter: blur(100px); opacity: .35; pointer-events: none;
 }
-.dash-section-title h2 { font-size: 15px; font-weight: 800; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
-.dash-section-title h2::before { content: ''; width: 4px; height: 15px; border-radius: 3px; background: var(--grad-brand); box-shadow: 0 0 10px rgba(124,92,255,.6); }
-.dash-link { font-size: 12.5px; font-weight: 600; color: var(--text-2); background: none; border: none; display: inline-flex; align-items: center; gap: 5px; }
+.art-card {
+  position: absolute; border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  box-shadow: 0 26px 60px -18px rgba(0, 0, 0, .85), inset 0 1px 0 rgba(255, 255, 255, .2);
+  overflow: hidden;
+}
+.art-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(150deg, rgba(255, 255, 255, .16), transparent 44%); }
+.art-card span {
+  position: absolute; left: 10px; bottom: 10px; z-index: 1;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .08em;
+  color: #fff; padding: 4px 9px; border-radius: 6px;
+  background: rgba(0, 0, 0, .45); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+.art-card.a {
+  width: 44%; aspect-ratio: 3/4; left: 3%; top: 5%; z-index: 2;
+  background: radial-gradient(120% 90% at 70% 18%, #ff9fc0 0%, #b06ab3 36%, #45237a 70%, #170f33 100%);
+  animation: float-a 7s ease-in-out infinite;
+}
+.art-card.b {
+  width: 54%; aspect-ratio: 16/10; right: 0; top: 0; z-index: 1;
+  background: radial-gradient(130% 100% at 30% 12%, #7ff0ff 0%, #2563eb 48%, #101a3f 100%);
+  animation: float-b 8s ease-in-out infinite;
+}
+.art-card.c {
+  width: 46%; aspect-ratio: 4/3; right: 10%; bottom: 2%; z-index: 3;
+  background: radial-gradient(120% 100% at 66% 20%, #ffd58a 0%, #ff8a5c 42%, #99304d 76%, #2a1030 100%);
+  animation: float-c 6.4s ease-in-out infinite;
+}
+@keyframes float-a { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(-7deg) translateY(-9px); } }
+@keyframes float-b { 0%, 100% { transform: rotate(5deg); } 50% { transform: rotate(5deg) translateY(-11px); } }
+@keyframes float-c { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(-3deg) translateY(-7px); } }
+
+/* model ticker */
+.hero-ticker {
+  grid-column: 1 / -1; position: relative; z-index: 1;
+  overflow: hidden; margin-top: 26px; padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.ticker-track { display: flex; gap: 44px; width: max-content; animation: ticker 36s linear infinite; }
+.ticker-track span {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-3); white-space: nowrap;
+}
+.ticker-track span i { font-style: normal; font-size: 8px; color: var(--accent); }
+@keyframes ticker { to { transform: translateX(-50%); } }
+
+/* ---- KPI band ---- */
+.kpi-band {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--glass);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.kpi-cell { position: relative; padding: 24px 28px 22px; }
+.kpi-cell + .kpi-cell { border-left: 1px solid var(--line); }
+.kpi-cell::after {
+  content: ''; position: absolute; left: 28px; right: 28px; bottom: 0; height: 2px;
+  border-radius: 2px 2px 0 0; background: var(--grad-brand); opacity: .6;
+}
+.kpi-cell.cyan::after { background: linear-gradient(90deg, #22d3ee, #4f8bff); }
+.kpi-cell.video::after { background: var(--grad-video); }
+.kpi-cell.amber::after { background: linear-gradient(90deg, #fbbf24, #ff8a5c); }
+.kpi-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.kpi-label svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.kpi-cell .kpi-label svg { color: #b3a1ff; }
+.kpi-cell.cyan .kpi-label svg { color: #7ff0ff; }
+.kpi-cell.video .kpi-label svg { color: #ff9ab5; }
+.kpi-cell.amber .kpi-label svg { color: #fcd34d; }
+.kpi-value {
+  font-family: var(--display);
+  font-size: 46px; font-weight: 700; letter-spacing: -.03em; line-height: 1;
+  margin-top: 14px; font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #fff 15%, #a9b4d6 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.kpi-hint { margin-top: 9px; font-size: 12px; color: var(--text-3); }
+
+/* ---- Section headers ---- */
+.dash-section-title { display: flex; align-items: center; gap: 18px; margin: 36px 0 18px; }
+.dash-section-title h2 { font-family: var(--display); font-size: 20px; font-weight: 700; letter-spacing: -.015em; white-space: nowrap; }
+.dash-section-title .rule { flex: 1; height: 1px; background: linear-gradient(90deg, var(--line-2), transparent); }
+.dash-link { font-size: 12.5px; font-weight: 700; color: var(--text-2); background: none; border: none; white-space: nowrap; }
 .dash-link:hover { color: var(--text); }
 
-/* Stat cards */
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.stat-card {
-  position: relative;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--glass);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-card);
-  padding: 20px 20px 18px;
-  overflow: hidden;
-  transition: transform .18s, border-color .18s;
-}
-.stat-card:hover { transform: translateY(-3px); border-color: var(--line-2); }
-.stat-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--grad-brand); opacity: .8;
-}
-.stat-card.video::before { background: var(--grad-video); }
-.stat-card.cyan::before { background: linear-gradient(90deg, #22d3ee, #4f8bff); }
-.stat-card.amber::before { background: linear-gradient(90deg, #fbbf24, #ff8a5c); }
-.stat-icon {
-  width: 40px; height: 40px; border-radius: 11px;
-  display: grid; place-items: center; margin-bottom: 16px;
-  background: rgba(124,92,255,.14); color: #b3a1ff; border: 1px solid rgba(124,92,255,.25);
-}
-.stat-card.video .stat-icon { background: rgba(255,92,135,.13); color: #ff9ab5; border-color: rgba(255,92,135,.25); }
-.stat-card.cyan .stat-icon { background: rgba(34,211,238,.12); color: #7ff0ff; border-color: rgba(34,211,238,.25); }
-.stat-card.amber .stat-icon { background: rgba(251,191,36,.12); color: #fcd34d; border-color: rgba(251,191,36,.25); }
-.stat-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.stat-value { font-size: 30px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1; }
-.stat-label { font-size: 12px; color: var(--text-3); margin-top: 7px; font-weight: 600; }
-
-/* Quick action tiles */
+/* ---- Quick actions ---- */
 .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .quick-tile {
-  position: relative; text-align: left;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  position: relative; text-align: left; color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--radius);
   background: var(--glass);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-card);
-  padding: 22px; color: var(--text);
-  transition: transform .18s, border-color .18s, box-shadow .18s;
+  padding: 26px 24px 24px;
   overflow: hidden;
+  transition: transform .18s, border-color .18s, box-shadow .18s;
 }
-.quick-tile:hover { transform: translateY(-3px); border-color: rgba(124,92,255,.4); box-shadow: var(--shadow-card), 0 22px 50px -22px rgba(124,92,255,.5); }
-.quick-tile.video:hover { border-color: rgba(255,92,135,.4); box-shadow: var(--shadow-card), 0 22px 50px -22px rgba(255,92,135,.5); }
+.quick-tile::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--grad-brand); opacity: 0; transition: opacity .2s;
+}
+.quick-tile.video::before { background: var(--grad-video); }
+.quick-tile.cyan::before { background: linear-gradient(90deg, #22d3ee, #4f8bff); }
+.quick-tile:hover::before { opacity: 1; }
+.quick-tile:hover { transform: translateY(-4px); border-color: rgba(124, 92, 255, .45); box-shadow: var(--shadow-card), 0 26px 60px -24px rgba(124, 92, 255, .55); }
+.quick-tile.video:hover { border-color: rgba(255, 92, 135, .45); box-shadow: var(--shadow-card), 0 26px 60px -24px rgba(255, 92, 135, .55); }
+.quick-tile.cyan:hover { border-color: rgba(34, 211, 238, .45); box-shadow: var(--shadow-card), 0 26px 60px -24px rgba(34, 211, 238, .5); }
+.quick-num {
+  position: absolute; top: 16px; right: 22px;
+  font-family: var(--display); font-size: 32px; font-weight: 700; letter-spacing: -.02em;
+  color: rgba(255, 255, 255, .07); transition: color .2s;
+}
+.quick-tile:hover .quick-num { color: rgba(255, 255, 255, .18); }
 .quick-icon {
-  width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 16px;
-  background: var(--grad-brand); color: #fff; box-shadow: 0 8px 22px -8px rgba(124,92,255,.7);
+  width: 46px; height: 46px; border-radius: 13px;
+  display: grid; place-items: center; margin-bottom: 18px;
+  background: var(--grad-brand); color: #fff;
+  box-shadow: 0 10px 24px -8px rgba(124, 92, 255, .7);
 }
-.quick-tile.video .quick-icon { background: var(--grad-video); box-shadow: 0 8px 22px -8px rgba(255,92,135,.7); }
-.quick-tile.cyan .quick-icon { background: linear-gradient(135deg, #22d3ee, #4f8bff); box-shadow: 0 8px 22px -8px rgba(34,211,238,.6); }
+.quick-tile.video .quick-icon { background: var(--grad-video); box-shadow: 0 10px 24px -8px rgba(255, 92, 135, .7); }
+.quick-tile.cyan .quick-icon { background: linear-gradient(135deg, #22d3ee, #4f8bff); box-shadow: 0 10px 24px -8px rgba(34, 211, 238, .6); }
 .quick-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.quick-tile h3 { font-size: 15px; font-weight: 700; }
-.quick-tile p { font-size: 12.5px; color: var(--text-3); line-height: 1.5; margin-top: 6px; }
-.quick-arrow { position: absolute; top: 22px; right: 22px; color: var(--text-3); transition: transform .18s, color .18s; }
-.quick-tile:hover .quick-arrow { color: var(--text); transform: translate(3px,-3px); }
-.quick-arrow svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.quick-tile h3 { font-family: var(--display); font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.quick-tile p { font-size: 12.5px; color: var(--text-3); line-height: 1.55; margin-top: 7px; max-width: 32ch; }
+.quick-cta {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 18px;
+  font-size: 12.5px; font-weight: 700; color: var(--text-2);
+  transition: color .18s, gap .18s;
+}
+.quick-tile:hover .quick-cta { color: var(--text); gap: 11px; }
+.quick-cta svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* Recent generations mini grid */
-.recent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+/* ---- Recent generations ---- */
+.recent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 14px; }
 .recent-card {
   position: relative; aspect-ratio: 1; border-radius: var(--radius-s); overflow: hidden;
   border: 1px solid var(--line); background: var(--bg-2); cursor: zoom-in;
-  transition: transform .18s, border-color .18s;
+  transition: transform .18s, border-color .18s, box-shadow .18s;
 }
-.recent-card:hover { transform: translateY(-3px) scale(1.01); border-color: rgba(124,92,255,.5); }
+.recent-card:hover { transform: translateY(-3px) scale(1.01); border-color: rgba(124, 92, 255, .5); box-shadow: 0 18px 40px -18px rgba(124, 92, 255, .45); }
 .recent-card img, .recent-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .recent-badge {
   position: absolute; top: 7px; left: 7px; z-index: 2;
   font-size: 9px; font-weight: 800; letter-spacing: .06em;
   padding: 3px 7px; border-radius: 5px; color: #fff;
-  background: rgba(124,92,255,.85); backdrop-filter: blur(4px);
+  background: rgba(124, 92, 255, .85); backdrop-filter: blur(4px);
 }
-.recent-badge.video { background: rgba(255,92,135,.85); }
+.recent-badge.video { background: rgba(255, 92, 135, .85); }
 .recent-card .recent-overlay {
   position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(to top, rgba(0,0,0,.72) 0%, transparent 52%);
+  background: linear-gradient(to top, rgba(0, 0, 0, .72) 0%, transparent 52%);
   display: flex; align-items: flex-end; padding: 9px 10px;
   opacity: 0; transition: opacity .18s;
 }
 .recent-card:hover .recent-overlay { opacity: 1; }
 .recent-overlay span { font-size: 10.5px; color: #e7ebf6; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* Dashboard empty */
 .dash-empty {
   border: 1px dashed var(--line-2); border-radius: var(--radius);
   padding: 48px 24px; text-align: center; color: var(--text-3);
-  background: rgba(255,255,255,.015);
+  background: rgba(255, 255, 255, .015);
 }
 .dash-empty svg { width: 34px; height: 34px; fill: none; stroke: var(--accent); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 12px; opacity: .8; }
 .dash-empty h3 { font-size: 14px; font-weight: 700; color: var(--text-2); }
 .dash-empty p { font-size: 12.5px; margin-top: 5px; }
 
-/* Model showcase */
-.model-showcase { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+/* ---- Model showcase ---- */
+.model-showcase { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
 .showcase-card {
   border: 1px solid var(--line); border-radius: var(--radius-s);
-  background: var(--glass); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  padding: 15px 16px; transition: transform .16s, border-color .16s;
+  background: var(--glass);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  padding: 15px 16px;
+  transition: transform .16s, border-color .16s;
 }
 .showcase-card:hover { transform: translateY(-2px); border-color: var(--line-2); }
 .showcase-card .sc-top { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
@@ -763,8 +856,14 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
 .showcase-card .sc-provider { font-size: 11px; color: var(--text-3); }
 .showcase-card .sc-tag { font-size: 11.5px; color: var(--text-3); line-height: 1.45; }
 
+@media (max-width: 1200px) {
+  .dash-hero { grid-template-columns: 1fr; }
+  .hero-visual { display: none; }
+}
 @media (max-width: 1100px) {
-  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-band { grid-template-columns: repeat(2, 1fr); }
+  .kpi-cell:nth-child(3) { border-left: none; }
+  .kpi-cell:nth-child(3), .kpi-cell:nth-child(4) { border-top: 1px solid var(--line); }
   .quick-grid { grid-template-columns: 1fr; }
   .dashboard { padding: 24px 18px 48px; }
   .dash-hero { padding: 30px 24px; }
@@ -873,40 +972,57 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
       <section class="dashboard">
         <div class="dash-inner">
           <div class="dash-hero">
-            <span class="dash-eyebrow"><span class="live-dot"></span> AI Generation Platform</span>
-            <h1>Create <span class="grad">cinematic images &amp; video</span> with a single prompt.</h1>
-            <p>Alcon AI Studio unifies the best generative models — Seedance, Kling, Vidu, FLUX, Seedream and Imagen — behind one clean studio. Describe a shot, pick a model, and generate.</p>
-            <div class="dash-hero-actions">
-              <button class="hero-btn primary" data-goto="image"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><path d="m21 15-5-5L5 21"/></svg> New image</button>
-              <button class="hero-btn ghost" data-goto="video"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg> New video</button>
+            <div class="hero-copy">
+              <span class="dash-eyebrow"><span class="live-dot"></span> Alcon AI Studio</span>
+              <h1>One studio.<br /><span class="grad">Every frontier model.</span></h1>
+              <p>Direct a full production pipeline — cinematic 1080p video with native audio, photoreal imagery, omni-model editing and crisp upscaling — from a single prompt.</p>
+              <div class="dash-hero-actions">
+                <button class="hero-btn primary" data-goto="image"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><path d="m21 15-5-5L5 21"/></svg> Create an image</button>
+                <button class="hero-btn ghost" data-goto="video"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg> Direct a video</button>
+              </div>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+              <div class="hero-orb"></div>
+              <div class="art-card b"><span>KLING 3.0 · 1080P</span></div>
+              <div class="art-card a"><span>SEEDREAM 4.5</span></div>
+              <div class="art-card c"><span>SEEDANCE 2.0 · 15S</span></div>
+            </div>
+            <div class="hero-ticker" aria-hidden="true">
+              <div class="ticker-track">
+                <span><i>◆</i>Seedance 2.0</span><span><i>◆</i>Kling 3.0 Pro</span><span><i>◆</i>Seedream 4.5</span><span><i>◆</i>FLUX 1.1 Ultra</span><span><i>◆</i>OmniGen V2</span><span><i>◆</i>Imagen 4</span><span><i>◆</i>Vidu Q1</span><span><i>◆</i>Hailuo 02 Pro</span><span><i>◆</i>Clarity Upscaler</span><span><i>◆</i>FLUX Kontext</span>
+                <span><i>◆</i>Seedance 2.0</span><span><i>◆</i>Kling 3.0 Pro</span><span><i>◆</i>Seedream 4.5</span><span><i>◆</i>FLUX 1.1 Ultra</span><span><i>◆</i>OmniGen V2</span><span><i>◆</i>Imagen 4</span><span><i>◆</i>Vidu Q1</span><span><i>◆</i>Hailuo 02 Pro</span><span><i>◆</i>Clarity Upscaler</span><span><i>◆</i>FLUX Kontext</span>
+              </div>
             </div>
           </div>
-          <div class="stat-grid" id="dash-stats"></div>
-          <div class="dash-section-title"><h2>Quick actions</h2></div>
+          <div class="kpi-band" id="dash-stats"></div>
+          <div class="dash-section-title"><h2>Quick actions</h2><span class="rule"></span></div>
           <div class="quick-grid">
             <button class="quick-tile" data-goto="image">
-              <span class="quick-arrow"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="quick-num">01</span>
               <div class="quick-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><path d="m21 15-5-5L5 21"/></svg></div>
-              <h3>Image Studio</h3><p>Text-to-image with multi-reference editing, identity &amp; style control.</p>
+              <h3>Image Studio</h3><p>Photoreal generation, omni-model editing and multi-reference identity control.</p>
+              <span class="quick-cta">Open studio <svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
             <button class="quick-tile video" data-goto="video">
-              <span class="quick-arrow"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="quick-num">02</span>
               <div class="quick-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg></div>
-              <h3>Video Studio</h3><p>Cinematic clips up to 15s with start &amp; end-frame keyframing and native audio.</p>
+              <h3>Video Studio</h3><p>Cinematic 1080p shots up to 15s — keyframing, native audio, reference casting.</p>
+              <span class="quick-cta">Open studio <svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
             <button class="quick-tile cyan" data-goto="gallery">
-              <span class="quick-arrow"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="quick-num">03</span>
               <div class="quick-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
-              <h3>Gallery</h3><p>Every finished generation, stored in your browser and ready to download.</p>
+              <h3>Gallery</h3><p>Every finished generation — one-click upscale, download and review.</p>
+              <span class="quick-cta">Browse work <svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
           </div>
-          <div class="dash-section-title"><h2>Recent generations</h2><button class="dash-link" data-goto="gallery">View all →</button></div>
+          <div class="dash-section-title"><h2>Recent generations</h2><span class="rule"></span><button class="dash-link" data-goto="gallery">View all →</button></div>
           <div class="recent-grid" id="dash-recent"></div>
           <div class="dash-empty" id="dash-recent-empty">
             <svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg>
             <h3>No generations yet</h3><p>Start in the Image or Video studio — your latest results will appear here.</p>
           </div>
-          <div class="dash-section-title"><h2>Available models</h2></div>
+          <div class="dash-section-title"><h2>Model lineup</h2><span class="rule"></span></div>
           <div class="model-showcase" id="dash-models"></div>
         </div>
       </section>
@@ -1087,6 +1203,25 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
         if (req.seed != null) p.seed = req.seed;
         return { endpoint: 'fal-ai/flux-pro/kontext/max', payload: p };
       } },
+    { id: 'omnigen-v2', name: 'OmniGen V2', provider: 'VectorSpaceLab',
+      tagline: 'Omni model — generation, multi-image editing & composition in one network',
+      aspectRatios: ['1:1','4:3','3:4','16:9','9:16'], maxImages: 4, supportsReference: true, maxReferenceImages: 3,
+      build(req) {
+        const sz = {'1:1':'square_hd','4:3':'landscape_4_3','3:4':'portrait_4_3','16:9':'landscape_16_9','9:16':'portrait_16_9'};
+        const p = { prompt: req.prompt, image_size: sz[req.aspectRatio] || 'square_hd', num_images: req.numImages, enable_safety_checker: true };
+        if (req.seed != null) p.seed = req.seed;
+        if (req.referenceImages && req.referenceImages.length) p.input_image_urls = req.referenceImages;
+        return { endpoint: 'fal-ai/omnigen-v2', payload: p };
+      } },
+    { id: 'clarity-upscaler', name: 'Clarity Upscaler', provider: 'fal',
+      tagline: 'Upscale any image 2×–4× with crisp, faithful detail enhancement',
+      aspectRatios: ['2x','3x','4x'], factorPicker: true, maxImages: 1, supportsReference: true, requiresReference: true, maxReferenceImages: 1,
+      promptOptional: true, isUpscaler: true,
+      build(req) {
+        const p = { image_url: req.referenceImages && req.referenceImages[0], prompt: req.prompt || 'masterpiece, best quality, highres', upscale_factor: parseInt(req.aspectRatio, 10) || 2, creativity: 0.35, resemblance: 0.6, num_inference_steps: 18, enable_safety_checker: true };
+        if (req.seed != null) p.seed = req.seed;
+        return { endpoint: 'fal-ai/clarity-upscaler', payload: p };
+      } },
     { id: 'imagen-4', name: 'Imagen 4', provider: 'Google',
       tagline: 'Excellent typography and natural language understanding',
       aspectRatios: ['1:1','16:9','9:16','3:4','4:3'], maxImages: 4, supportsReference: false,
@@ -1108,8 +1243,8 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
 
   const VIDEO_MODELS = [
     { id: 'seedance-2', name: 'Seedance 2.0', provider: 'ByteDance',
-      tagline: 'State-of-the-art cinematic engine — native audio, start+end frames, 4–15s',
-      durationRange: { min: 4, max: 15 }, defaultDuration: 8, resolutions: ['480p','720p'], defaultResolution: '720p',
+      tagline: 'State-of-the-art cinematic engine — 1080p, native audio, start+end frames, 4–15s',
+      durationRange: { min: 4, max: 15 }, defaultDuration: 8, resolutions: ['480p','720p','1080p'], defaultResolution: '720p',
       aspectRatios: ['16:9','9:16','1:1','4:3','3:4','21:9'], supportsStartFrame: true, supportsEndFrame: true, supportsAudio: true, supportsReference: true, maxReferenceImages: 4,
       referenceHint: 'Reference people/objects with @Image1, @Image2… in your prompt',
       build(req) {
@@ -1257,11 +1392,13 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
       wrap.appendChild(c);
     });
     if (!m.aspectRatios.includes(state.img.aspect)) state.img.aspect = m.aspectRatios[0];
+    $('#img-aspect').previousElementSibling.textContent = m.factorPicker ? 'Upscale factor' : 'Aspect ratio';
     renderChips($('#img-aspect'), m.aspectRatios, state.img.aspect, v => { state.img.aspect = v; renderImageControls(); });
     state.img.count = Math.min(state.img.count, m.maxImages || 4);
     $('#img-count span').textContent = state.img.count;
+    $('#img-prompt').placeholder = m.isUpscaler ? 'Optional — describe details to enhance while upscaling…' : 'A cinematic editorial portrait of a violinist on a rain-soaked rooftop at dusk, neon reflections, shallow depth of field, 85mm…';
     $('#img-ref-field').style.display = m.supportsReference ? '' : 'none';
-    $('#img-ref-hint').textContent = m.requiresReference ? `(required — ${m.name} edits your uploaded image)` : `(optional — up to ${m.maxReferenceImages || 1}, guides style / identity)`;
+    $('#img-ref-hint').textContent = m.isUpscaler ? '(required — the image you want to upscale)' : m.requiresReference ? `(required — ${m.name} edits your uploaded image)` : `(optional — up to ${m.maxReferenceImages || 1}, guides style / identity)`;
   }
 
   function renderVideoControls() {
@@ -1382,8 +1519,8 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
     const btn = $('#img-generate'), note = $('#img-note'), prompt = $('#img-prompt').value.trim(), m = imgModel();
     note.classList.remove('error'); note.textContent = '';
     if (!getKey()) return showNote(note, 'Add your fal.ai API key in Settings first.', true);
-    if (!prompt) return showNote(note, 'Write a prompt first.', true);
-    if (m.requiresReference && !state.img.refs.length) return showNote(note, `${m.name} needs a reference image — upload one above.`, true);
+    if (!prompt && !m.promptOptional) return showNote(note, 'Write a prompt first.', true);
+    if (m.requiresReference && !state.img.refs.length) return showNote(note, m.isUpscaler ? 'Upload the image you want to upscale first.' : `${m.name} needs a reference image — upload one above.`, true);
     btn.disabled = true; $('.btn-label', btn).textContent = 'Submitting…';
     try {
       const { endpoint, payload } = m.build({ prompt, aspectRatio: state.img.aspect, numImages: state.img.count, seed: parseSeed($('#img-seed').value.trim()), referenceImages: state.img.refs.slice(0, m.maxReferenceImages || 0).map(r => r.url) });
@@ -1486,12 +1623,25 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
       if (job.meta && job.meta.aspectRatio) tags.push(`<span class="tag">${esc(job.meta.aspectRatio)}</span>`);
       if (job.meta && job.meta.referenceCount) tags.push(`<span class="tag">${job.meta.referenceCount} REF</span>`);
     }
-    info.innerHTML = `<div class="job-prompt" title="${esc(job.meta && job.meta.prompt)}">${esc(job.meta && job.meta.prompt || '')}</div><div class="job-meta">${tags.join('')}<div class="job-actions">${job.status === 'completed' ? `<button class="icon-btn dl" title="Download"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg></button>` : ''}<button class="icon-btn danger del" title="Delete"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13h8l1-13"/></svg></button></div></div>`;
+    info.innerHTML = `<div class="job-prompt" title="${esc(job.meta && job.meta.prompt)}">${esc(job.meta && job.meta.prompt || '')}</div><div class="job-meta">${tags.join('')}<div class="job-actions">${job.status === 'completed' && job.kind === 'image' ? `<button class="icon-btn up" title="Upscale"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M21 3l-7 7M9 21H3v-6M3 21l7-7"/></svg></button>` : ''}${job.status === 'completed' ? `<button class="icon-btn dl" title="Download"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg></button>` : ''}<button class="icon-btn danger del" title="Delete"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13h8l1-13"/></svg></button></div></div>`;
     card.appendChild(info);
+    const up = info.querySelector('.up'); if (up) up.addEventListener('click', () => upscaleFrom(job));
     const dl = info.querySelector('.dl'); if (dl) dl.addEventListener('click', () => job.outputs.forEach((o, i) => download(o.url, `alcon-${job.kind}-${job.id.slice(0, 8)}-${i}${o.type === 'video' ? '.mp4' : '.png'}`)));
     info.querySelector('.del').addEventListener('click', () => { state.jobs = state.jobs.filter(j => j.id !== job.id); saveJobs(); renderJobs(); renderGallery(); });
     return card;
   }
+  // Send a finished image straight to the Clarity Upscaler in Image Studio
+  function upscaleFrom(job) {
+    const out = job.outputs && job.outputs[0];
+    if (!out) return;
+    state.img.modelId = 'clarity-upscaler';
+    state.img.refs = [{ id: uuid(), url: out.url }];
+    renderImageControls();
+    renderRefThumbs();
+    goToView('image');
+    toast('Image loaded into Clarity Upscaler — pick a factor and generate.', 'ok');
+  }
+
   function renderInto(gridSel, emptySel, jobs) { const g = $(gridSel); g.innerHTML = ''; jobs.forEach(j => g.appendChild(jobCard(j))); $(emptySel).classList.toggle('show', !jobs.length); }
   function renderJobs() { renderInto('#img-jobs', '#img-empty', state.jobs.filter(j => j.kind === 'image')); renderInto('#vid-jobs', '#vid-empty', state.jobs.filter(j => j.kind === 'video')); }
   function renderGallery() { renderInto('#gallery-jobs', '#gallery-empty', state.jobs.filter(j => j.status === 'completed' && (state.galleryFilter === 'all' || j.kind === state.galleryFilter))); }
@@ -1504,8 +1654,8 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
     video: '<rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/>',
     bolt:  '<path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/>'
   };
-  const dashStat = (cls, icon, value, label) =>
-    `<div class="stat-card ${cls}"><div class="stat-icon"><svg viewBox="0 0 24 24">${DASH_ICONS[icon]}</svg></div><div class="stat-value">${value}</div><div class="stat-label">${label}</div></div>`;
+  const dashStat = (cls, icon, value, label, hint) =>
+    `<div class="kpi-cell ${cls}"><div class="kpi-label"><svg viewBox="0 0 24 24">${DASH_ICONS[icon]}</svg><span>${label}</span></div><div class="kpi-value">${value}</div><div class="kpi-hint">${hint}</div></div>`;
 
   function renderDashboard() {
     const completed = state.jobs.filter(j => j.status === 'completed');
@@ -1515,10 +1665,10 @@ textarea::placeholder, input::placeholder { color: var(--text-3); }
     const totalOutputs = completed.reduce((n, j) => n + ((j.outputs && j.outputs.length) || 0), 0);
     const statsEl = $('#dash-stats');
     if (statsEl) statsEl.innerHTML =
-      dashStat('', 'layers', totalOutputs, 'Assets created') +
-      dashStat('cyan', 'image', images.length, 'Image jobs') +
-      dashStat('video', 'video', videos.length, 'Video jobs') +
-      dashStat('amber', 'bolt', active, active === 1 ? 'Generating now' : 'In the queue');
+      dashStat('', 'layers', totalOutputs, 'Assets created', 'images & videos delivered') +
+      dashStat('cyan', 'image', images.length, 'Image jobs', `${IMAGE_MODELS.length} models incl. upscaler`) +
+      dashStat('video', 'video', videos.length, 'Video jobs', 'up to 1080p · 15s shots') +
+      dashStat('amber', 'bolt', active, 'Generating', active ? 'running on the GPU queue' : `${IMAGE_MODELS.length + VIDEO_MODELS.length} models standing by`);
 
     const recentEl = $('#dash-recent'), emptyEl = $('#dash-recent-empty');
     if (recentEl) {
