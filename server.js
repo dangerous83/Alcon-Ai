@@ -107,9 +107,9 @@ function badRequest(res, msg) {
 app.post('/api/generate/image', async (req, res) => {
   try {
     const { prompt, modelId, aspectRatio, numImages, referenceUploadIds, seed } = req.body || {};
-    if (!prompt?.trim()) return badRequest(res, 'Describe what you want to create.');
     const model = findModel('image', modelId);
     if (!model) return badRequest(res, `Unknown image model: ${modelId}`);
+    if (!prompt?.trim() && !model.promptOptional) return badRequest(res, 'Describe what you want to create.');
 
     const referenceImages = (referenceUploadIds || [])
       .slice(0, model.maxReferenceImages || 0)
@@ -121,7 +121,7 @@ app.post('/api/generate/image', async (req, res) => {
     }
 
     const { endpoint, payload } = model.build({
-      prompt: prompt.trim(),
+      prompt: (prompt || '').trim(),
       aspectRatio,
       numImages: Math.min(Math.max(parseInt(numImages, 10) || 1, 1), model.maxImages || 4),
       referenceImages,
@@ -134,7 +134,7 @@ app.post('/api/generate/image', async (req, res) => {
       endpoint,
       payload,
       meta: {
-        prompt: prompt.trim(),
+        prompt: (prompt || '').trim(),
         aspectRatio,
         numImages: payload.num_images,
         referenceCount: referenceImages.length,

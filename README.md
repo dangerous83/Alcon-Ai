@@ -21,7 +21,7 @@ media mirrored to disk (see [DEPLOY.md](./DEPLOY.md)).
 ### 🎬 Video Studio — up to 15 s per shot
 | Model | Provider | Duration | Start frame | End frame | Audio |
 |---|---|---|---|---|---|
-| **Seedance 2.0** | ByteDance | 4–15 s | ✅ | ✅ | ✅ native |
+| **Seedance 2.0** (up to 1080p) | ByteDance | 4–15 s | ✅ | ✅ | ✅ native |
 | **Kling 3.0 Pro** | Kuaishou | 3–15 s | ✅ | ✅ | ✅ native |
 | **Kling 2.5 Turbo Pro** | Kuaishou | 5 / 10 s | ✅ | ✅ | — |
 | **Seedance 1.0 Pro** | ByteDance | 5 / 10 s | ✅ | ✅ | — |
@@ -39,10 +39,13 @@ media mirrored to disk (see [DEPLOY.md](./DEPLOY.md)).
 | **Seedream 4.5** | ByteDance | ✅ up to 6 (edit / identity / style) |
 | **FLUX 1.1 Pro Ultra** | Black Forest Labs | — |
 | **FLUX.1 Kontext [max]** | Black Forest Labs | ✅ instruction-based editing |
+| **OmniGen V2** (omni model) | VectorSpaceLab | ✅ up to 3 (multi-image editing & composition) |
+| **Clarity Upscaler** (2×–4×) | fal | ✅ required (the image to upscale) |
 | **Imagen 4** | Google | — |
 | **FLUX.1 [dev]** | Black Forest Labs | — |
 
 - Up to 4 outputs per run, seed control, per-model aspect ratios
+- **One-click upscale** — every finished image card has an Upscale action that sends it straight to the Clarity Upscaler
 - Multi-reference upload for editing and identity/style guidance
 
 ### Platform features

@@ -6,7 +6,7 @@
   <title>Alcon AI Studio — Image & Video Generation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>" />
 </head>
@@ -56,47 +56,64 @@
       <section class="dashboard">
         <div class="dash-inner">
           <div class="dash-hero">
-            <span class="dash-eyebrow"><span class="live-dot"></span> AI Generation Platform</span>
-            <h1>Create <span class="grad">cinematic images &amp; video</span> with a single prompt.</h1>
-            <p>Alcon AI Studio unifies the best generative models — Seedance, Kling, Vidu, FLUX, Seedream and Imagen — behind one clean studio. Describe a shot, pick a model, and generate.</p>
-            <div class="dash-hero-actions">
-              <button class="hero-btn primary" data-goto="image">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><path d="m21 15-5-5L5 21"/></svg>
-                New image
-              </button>
-              <button class="hero-btn ghost" data-goto="video">
-                <svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg>
-                New video
-              </button>
+            <div class="hero-copy">
+              <span class="dash-eyebrow"><span class="live-dot"></span> Alcon AI Studio</span>
+              <h1>One studio.<br /><span class="grad">Every frontier model.</span></h1>
+              <p>Direct a full production pipeline — cinematic 1080p video with native audio, photoreal imagery, omni-model editing and crisp upscaling — from a single prompt.</p>
+              <div class="dash-hero-actions">
+                <button class="hero-btn primary" data-goto="image">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><path d="m21 15-5-5L5 21"/></svg>
+                  Create an image
+                </button>
+                <button class="hero-btn ghost" data-goto="video">
+                  <svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg>
+                  Direct a video
+                </button>
+              </div>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+              <div class="hero-orb"></div>
+              <div class="art-card b"><span>KLING 3.0 · 1080P</span></div>
+              <div class="art-card a"><span>SEEDREAM 4.5</span></div>
+              <div class="art-card c"><span>SEEDANCE 2.0 · 15S</span></div>
+            </div>
+            <div class="hero-ticker" aria-hidden="true">
+              <div class="ticker-track">
+                <span><i>◆</i>Seedance 2.0</span><span><i>◆</i>Kling 3.0 Pro</span><span><i>◆</i>Seedream 4.5</span><span><i>◆</i>FLUX 1.1 Ultra</span><span><i>◆</i>OmniGen V2</span><span><i>◆</i>Imagen 4</span><span><i>◆</i>Vidu Q1</span><span><i>◆</i>Hailuo 02 Pro</span><span><i>◆</i>Clarity Upscaler</span><span><i>◆</i>FLUX Kontext</span>
+                <span><i>◆</i>Seedance 2.0</span><span><i>◆</i>Kling 3.0 Pro</span><span><i>◆</i>Seedream 4.5</span><span><i>◆</i>FLUX 1.1 Ultra</span><span><i>◆</i>OmniGen V2</span><span><i>◆</i>Imagen 4</span><span><i>◆</i>Vidu Q1</span><span><i>◆</i>Hailuo 02 Pro</span><span><i>◆</i>Clarity Upscaler</span><span><i>◆</i>FLUX Kontext</span>
+              </div>
             </div>
           </div>
 
-          <div class="stat-grid" id="dash-stats"></div>
+          <div class="kpi-band" id="dash-stats"></div>
 
-          <div class="dash-section-title"><h2>Quick actions</h2></div>
+          <div class="dash-section-title"><h2>Quick actions</h2><span class="rule"></span></div>
           <div class="quick-grid">
             <button class="quick-tile" data-goto="image">
-              <span class="quick-arrow"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="quick-num">01</span>
               <div class="quick-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><path d="m21 15-5-5L5 21"/></svg></div>
               <h3>Image Studio</h3>
-              <p>Text-to-image with multi-reference editing, identity &amp; style control.</p>
+              <p>Photoreal generation, omni-model editing and multi-reference identity control.</p>
+              <span class="quick-cta">Open studio <svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
             <button class="quick-tile video" data-goto="video">
-              <span class="quick-arrow"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="quick-num">02</span>
               <div class="quick-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg></div>
               <h3>Video Studio</h3>
-              <p>Cinematic clips up to 15s with start &amp; end-frame keyframing and native audio.</p>
+              <p>Cinematic 1080p shots up to 15s — keyframing, native audio, reference casting.</p>
+              <span class="quick-cta">Open studio <svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
             <button class="quick-tile cyan" data-goto="gallery">
-              <span class="quick-arrow"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="quick-num">03</span>
               <div class="quick-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
               <h3>Gallery</h3>
-              <p>Every finished generation, stored permanently and ready to download.</p>
+              <p>Every finished generation — one-click upscale, download and review.</p>
+              <span class="quick-cta">Browse work <svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
           </div>
 
           <div class="dash-section-title">
-            <h2>Recent generations</h2>
+            <h2>Recent generations</h2><span class="rule"></span>
             <button class="dash-link" data-goto="gallery">View all →</button>
           </div>
           <div class="recent-grid" id="dash-recent"></div>
@@ -106,7 +123,7 @@
             <p>Start in the Image or Video studio — your latest results will appear here.</p>
           </div>
 
-          <div class="dash-section-title"><h2>Available models</h2></div>
+          <div class="dash-section-title"><h2>Model lineup</h2><span class="rule"></span></div>
           <div class="model-showcase" id="dash-models"></div>
         </div>
       </section>
