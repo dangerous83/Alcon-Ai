@@ -51,12 +51,23 @@
   // ------------------------------------------------------------------
   // Navigation
   // ------------------------------------------------------------------
+  function goToView(view) {
+    $$('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    $$('.view').forEach(v => v.classList.toggle('active', v.id === `view-${view}`));
+    if (view === 'gallery') renderGallery();
+    if (view === 'dashboard') renderDashboard();
+    const scroller = $(`#view-${view} .dashboard, #view-${view} .results, #view-${view} .panel`);
+    if (scroller) scroller.scrollTop = 0;
+  }
+
   $$('.nav-item').forEach(btn => {
-    btn.addEventListener('click', () => {
-      $$('.nav-item').forEach(b => b.classList.toggle('active', b === btn));
-      $$('.view').forEach(v => v.classList.toggle('active', v.id === `view-${btn.dataset.view}`));
-      if (btn.dataset.view === 'gallery') renderGallery();
-    });
+    btn.addEventListener('click', () => goToView(btn.dataset.view));
+  });
+
+  // Dashboard "go to" shortcuts (hero buttons, quick tiles, view-all links)
+  document.addEventListener('click', e => {
+    const goto = e.target.closest('[data-goto]');
+    if (goto) goToView(goto.dataset.goto);
   });
 
   // ------------------------------------------------------------------
@@ -458,6 +469,7 @@
     } catch { /* server briefly unavailable — keep last state */ }
     renderJobs();
     if ($('#view-gallery').classList.contains('active')) renderGallery();
+    if ($('#view-dashboard').classList.contains('active')) renderDashboard();
     const anyPending = state.jobs.some(j => j.status === 'queued' || j.status === 'running');
     clearTimeout(state.pollTimer);
     if (anyPending) state.pollTimer = setTimeout(() => refreshJobs(), immediate ? 1500 : 3000);
@@ -574,6 +586,93 @@
     renderInto('#gallery-jobs', '#gallery-empty', done);
   }
 
+  // ------------------------------------------------------------------
+  // Dashboard
+  // ------------------------------------------------------------------
+  const ICONS = {
+    layers: '<path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><path d="m21 15-5-5L5 21"/>',
+    video: '<rect x="2" y="4" width="14" height="16" rx="2"/><path d="m22 8-6 4 6 4V8Z"/>',
+    bolt:  '<path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/>'
+  };
+
+  function statCard(cls, iconKey, value, label) {
+    return `
+      <div class="stat-card ${cls}">
+        <div class="stat-icon"><svg viewBox="0 0 24 24">${ICONS[iconKey]}</svg></div>
+        <div class="stat-value">${value}</div>
+        <div class="stat-label">${label}</div>
+      </div>`;
+  }
+
+  function renderDashboard() {
+    // stats
+    const completed = state.jobs.filter(j => j.status === 'completed');
+    const images = state.jobs.filter(j => j.kind === 'image');
+    const videos = state.jobs.filter(j => j.kind === 'video');
+    const active = state.jobs.filter(j => j.status === 'queued' || j.status === 'running').length;
+    const totalOutputs = completed.reduce((n, j) => n + (j.outputs?.length || 0), 0);
+    const statsEl = $('#dash-stats');
+    if (statsEl) {
+      statsEl.innerHTML =
+        statCard('', 'layers', totalOutputs, 'Assets created') +
+        statCard('cyan', 'image', images.length, 'Image jobs') +
+        statCard('video', 'video', videos.length, 'Video jobs') +
+        statCard('amber', 'bolt', active, active === 1 ? 'Generating now' : 'In the queue');
+    }
+
+    // recent completed media
+    const recentEl = $('#dash-recent');
+    const emptyEl = $('#dash-recent-empty');
+    if (recentEl) {
+      const recent = completed
+        .filter(j => j.outputs?.length)
+        .slice(0, 12);
+      recentEl.innerHTML = '';
+      recent.forEach(job => {
+        const out = job.outputs[0];
+        const card = document.createElement('div');
+        card.className = 'recent-card';
+        const media = out.type === 'video'
+          ? `<video src="${esc(out.url)}" muted loop preload="metadata" playsinline></video>`
+          : `<img src="${esc(out.url)}" alt="" loading="lazy">`;
+        card.innerHTML = `
+          <span class="recent-badge ${job.kind === 'video' ? 'video' : ''}">${job.kind === 'video' ? 'VIDEO' : 'IMAGE'}</span>
+          ${media}
+          <div class="recent-overlay"><span>${esc(job.meta?.prompt || job.modelName || '')}</span></div>`;
+        card.addEventListener('click', () => openLightbox(job, 0));
+        const vid = card.querySelector('video');
+        if (vid) {
+          card.addEventListener('mouseenter', () => vid.play().catch(() => {}));
+          card.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; });
+        }
+        recentEl.appendChild(card);
+      });
+      recentEl.style.display = recent.length ? '' : 'none';
+      if (emptyEl) emptyEl.style.display = recent.length ? 'none' : '';
+    }
+
+    // model showcase
+    const modelsEl = $('#dash-models');
+    if (modelsEl && state.catalog) {
+      const rows = [
+        ...state.catalog.video.map(m => ({ ...m, kind: 'video' })),
+        ...state.catalog.image.map(m => ({ ...m, kind: 'image' }))
+      ];
+      modelsEl.innerHTML = rows.map(m => `
+        <div class="showcase-card">
+          <div class="sc-top">
+            <span class="showcase-dot ${m.kind === 'video' ? 'video' : ''}"></span>
+            <div>
+              <div class="sc-name">${esc(m.name)}</div>
+              <div class="sc-provider">${esc(m.provider)}</div>
+            </div>
+          </div>
+          <div class="sc-tag">${esc(m.tagline || '')}</div>
+        </div>`).join('');
+    }
+  }
+
   $('#gallery-filter').addEventListener('click', e => {
     const chip = e.target.closest('.chip');
     if (!chip) return;
@@ -656,6 +755,7 @@
     state.vid.modelId = state.catalog.video[0].id;
     renderImageControls();
     renderVideoControls();
+    renderDashboard();
     refreshApiStatus();
     refreshJobs();
   })();
